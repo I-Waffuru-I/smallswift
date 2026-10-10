@@ -1,6 +1,6 @@
 %{
 
-  #include "libcomp/tokens.h"
+  #include "parser.tab.hh"
 
   /* Keep track of current position of lex for error messages, i.e. 
    * the position just *after* the last token read */
@@ -18,7 +18,6 @@ identifier {letter}({letdig})*
 
   /* --- */
 %%
-
 
 
 
@@ -63,11 +62,10 @@ let { return (LET); }
 return { return (RETURN); }
 (\r\n|\r|\n) { return (NEWLINE); }
 
-"//" { }
 
 [ \t\v]+ {}
 
-{digit}+ { return (INTEGER); }
+{digit}+ { yylval.ival = atoi(yytext); return (INTEGER); }
 
 {identifier} { return (IDENTIFIER); }
 

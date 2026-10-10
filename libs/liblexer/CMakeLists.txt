@@ -15,4 +15,6 @@ target_include_directories(liblexer PUBLIC
 
 target_link_libraries(liblexer PUBLIC
     libcomp   # for libcomp/tokens.h
+    libparser # parser.tab.hh
 )
+

@@ -14,12 +14,13 @@ run *args: build
 lex file: build
     ./{{build_dir}}/bin/lex_debug {{file}}
 
+parse file: build
+    ./{{build_dir}}/bin/parse_debug {{file}}
+
 clean:
     rm -rf {{build_dir}}
 
 
-test_dir := "test"
-test: build text_lex
+test: build 
+    ./tests.sh
 
-test_lex: 
-    
