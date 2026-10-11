@@ -13,13 +13,13 @@ int main(int argc, char* argv[]) {
 
    yyin = fopen(argv[1], "r");
    if (!yyin) {
-      printf("Could not open file: %s\n", argv[1]);
+      std::cout << "Could not open file:" << argv[1] << std::endl;
       return 1;
    }
 
    int parse_res = yyparse();
    if (parse_res == 0) {
-      printf("parse successful\n");
+      std::cout << "parse successful" << std::endl;
    } else {
       exit(parse_res);
    }

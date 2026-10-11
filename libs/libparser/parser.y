@@ -20,8 +20,10 @@ void yyerror(const char *s);
 }
 
 %union {
+    bool initLine;
     int ival;
     libcomp::Exp exp;
+    libcomp::Expl expl;
     libcomp::Stm stm;
 }
 
@@ -68,19 +70,31 @@ void yyerror(const char *s);
 %left MUL DIV
 
 %type <exp> intexpr
-%type <stm> program
+%type <exp> line 
+%type <expl> program
 
 /* ---- */
 %%
 
 program:
-      /* leeg programma */   { $$ = nullptr; parse_result = $$; }
-    | program line  { result = $$; }
+      /* leeg programma */   { $$ = nullptr; result = $$; }
+    | program line  {
+        printf("prog line");
+        if (!yylval.initLine) {
+            printf("init line");
+            $$ = new EndExp($2);
+            yylval.initLine = 1;
+        } else {
+            $$ = new LineExp($2, $1);
+            result = $$;
+        };
+        $$->debug();
+    }
     ;
 
 line:
       NEWLINE
-    | intexpr NEWLINE {}
+    | intexpr NEWLINE { printf("line: "); $1->debug(); printf("\n"); $$ = $1; }
     ;
 
 intexpr:
