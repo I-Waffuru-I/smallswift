@@ -43,6 +43,7 @@ void ParenExp::debug() {
 LineExp::LineExp(Exp e, Expl t) : exp(e), tail(t) {};
 void LineExp::debug(){
    tail->debug();
+   std::cout << std::endl;
    exp->debug();
 }
 

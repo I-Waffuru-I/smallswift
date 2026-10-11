@@ -19,12 +19,13 @@ int main(int argc, char* argv[]) {
 
    int parse_res = yyparse();
    if (parse_res == 0) {
-      std::cout << "parse successful" << std::endl;
+      std::cout << std::endl << "parse successful" << std::endl;
    } else {
       exit(parse_res);
    }
 
    if (libcomp::result) {
+      std::cout << "debugging parsed tree:" << std::endl;
       libcomp::result->debug();
    } else {
       std::cout << "result is empty" << std::endl;

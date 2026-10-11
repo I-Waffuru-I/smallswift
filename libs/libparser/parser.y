@@ -20,7 +20,6 @@ void yyerror(const char *s);
 }
 
 %union {
-    bool initLine;
     int ival;
     libcomp::Exp exp;
     libcomp::Expl expl;
@@ -79,31 +78,29 @@ void yyerror(const char *s);
 program:
       /* leeg programma */   { $$ = nullptr; result = $$; }
     | program line  {
-        printf("prog line");
-        if (!yylval.initLine) {
-            printf("init line");
-            $$ = new EndExp($2);
-            yylval.initLine = 1;
-        } else {
-            $$ = new LineExp($2, $1);
-            result = $$;
-        };
-        $$->debug();
+        if ($2 != nullptr){ /* not empty line */
+            if ($1 == nullptr) {
+                $$ = new EndExp($2);
+            } else {
+                $$ = new LineExp($2, $1);
+                result = $$;
+            };
+        }
     }
     ;
 
 line:
-      NEWLINE
-    | intexpr NEWLINE { printf("line: "); $1->debug(); printf("\n"); $$ = $1; }
+      NEWLINE { $$ = nullptr; }
+    | intexpr NEWLINE { $$ = $1; }
     ;
 
 intexpr:
-      INTEGER { printf("i %i\n", yylval.ival); $$ = new NumExp(yylval.ival); }
+      INTEGER { $$ = new NumExp(yylval.ival); }
     | intexpr PLUS intexpr { $$ = new OpExp($1, Plus, $3); }
     | intexpr MINUS intexpr { $$ = new OpExp($1, Minus, $3); }
     | intexpr MUL intexpr { $$ = new OpExp($1, Multiply, $3); }
     | intexpr DIV intexpr { $$ = new OpExp($1, Divide, $3); }
-    | LPAREN intexpr RPAREN { $$ = $2; }
+    | LPAREN intexpr RPAREN { $$ = new ParenExp($2); }
     ;
 
 %%
