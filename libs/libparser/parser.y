@@ -1,22 +1,32 @@
+%code requires {
+    #include "libcomp/libcomp.h"
+}
+
 %{
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdio>
+#include "libcomp/libcomp.h"
 #include "liblexer/lexer.h"
-
 
 int yylex();
 void yyerror(const char *s);
 
 %}
 
+%code {
+    using namespace libcomp;
+}
+
 %union {
     int ival;
+    libcomp::Exp exp;
+    libcomp::Stm stm;
 }
 
 /* zou nice zijn om da gwn te importen van tokens.h ma idk of da gaat */
-%token <ival> INTEGER    258
+%token <exp> INTEGER    258
 %token IDENTIFIER 259
 %token PLUS       260
 %token MINUS      261
@@ -57,26 +67,28 @@ void yyerror(const char *s);
 %left PLUS MINUS
 %left MUL DIV
 
-%type <ival> intexpr
+%type <exp> intexpr
+%type <stm> program
 
 /* ---- */
 %%
 
 program:
-    | program line 
+      /* leeg programma */   { $$ = nullptr; parse_result = $$; }
+    | program line  { result = $$; }
     ;
 
 line:
       NEWLINE
-    | intexpr NEWLINE { printf("line: %i\n", $1); }
+    | intexpr NEWLINE {}
     ;
 
 intexpr:
-      INTEGER { printf("i %i\n", yylval.ival); $$ = yylval.ival; }
-    | intexpr PLUS intexpr { $$ = $1 + $3; }
-    | intexpr MINUS intexpr { $$ = $1 - $3; }
-    | intexpr MUL intexpr { $$ = $1 * $3; }
-    | intexpr DIV intexpr { $$ = $1 / $3; }
+      INTEGER { printf("i %i\n", yylval.ival); $$ = new NumExp(yylval.ival); }
+    | intexpr PLUS intexpr { $$ = new OpExp($1, Plus, $3); }
+    | intexpr MINUS intexpr { $$ = new OpExp($1, Minus, $3); }
+    | intexpr MUL intexpr { $$ = new OpExp($1, Multiply, $3); }
+    | intexpr DIV intexpr { $$ = new OpExp($1, Divide, $3); }
     | LPAREN intexpr RPAREN { $$ = $2; }
     ;
 
