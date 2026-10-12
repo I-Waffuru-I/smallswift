@@ -3,6 +3,7 @@
 #include <iostream>
 #include "liblexer/lexer.h"
 #include "libcomp/libcomp.h"
+#include "libcomp/parsevals.h"
 #include "parser.tab.hh"
 
 int main(int argc, char* argv[]) {
@@ -24,9 +25,9 @@ int main(int argc, char* argv[]) {
       exit(parse_res);
    }
 
-   if (libcomp::result) {
+   if (result) {
       std::cout << "debugging parsed tree:" << std::endl;
-      libcomp::result->debug();
+      result->debug();
    } else {
       std::cout << "result is empty" << std::endl;
    }

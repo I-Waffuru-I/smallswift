@@ -1,5 +1,6 @@
 %code requires {
     #include "libcomp/libcomp.h"
+    #include "libcomp/parsevals.h"
 }
 
 %{
@@ -90,8 +91,14 @@ program:
     ;
 
 line:
-      NEWLINE { $$ = nullptr; }
-    | intexpr NEWLINE { $$ = $1; }
+      
+    | endline { $$ = nullptr; }
+    | intexpr endline { $$ = $1; }
+    ;
+
+endline:
+    | NEWLINE 
+    | SEMICOLON
     ;
 
 intexpr:
@@ -102,6 +109,9 @@ intexpr:
     | intexpr DIV intexpr { $$ = new OpExp($1, Divide, $3); }
     | LPAREN intexpr RPAREN { $$ = new ParenExp($2); }
     ;
+
+
+
 
 %%
 

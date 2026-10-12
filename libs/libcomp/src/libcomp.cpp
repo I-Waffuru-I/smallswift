@@ -2,7 +2,6 @@
 #include <iostream>
 namespace libcomp {
 
-Expl result = nullptr;
 
 NumExp::NumExp(int n) : num(n){};
 void NumExp::debug() {
@@ -43,7 +42,7 @@ void ParenExp::debug() {
 LineExp::LineExp(Exp e, Expl t) : exp(e), tail(t) {};
 void LineExp::debug(){
    tail->debug();
-   std::cout << std::endl;
+   std::cout << ";" << std::endl;
    exp->debug();
 }
 

@@ -19,9 +19,6 @@ typedef Stm_* Stm;
 typedef Exp_* Exp;
 typedef ExpList_* Expl;
 
-// waar bison naar output
-// defined in libcomp.cpp
-extern Expl result;
 
 
 struct NumExp : public Exp_ {
@@ -59,6 +56,8 @@ struct EndExp : public ExpList_ {
 	EndExp(Exp exp);
 	void debug();
 };
+
+
 
 
 } // namespace libcomp
