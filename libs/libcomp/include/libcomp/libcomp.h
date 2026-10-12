@@ -26,11 +26,36 @@ struct NumExp : public Exp_ {
 	NumExp(int n);
 	void debug();
 };
+
+struct TFExp : public Exp_ {
+	bool val;
+	TFExp(bool value);
+	void debug();
+};
+
+
+
 enum OpType {
 	Plus,
 	Minus,
 	Multiply,
 	Divide
+};
+enum BoolExpType {
+	And,
+	Or,
+	Eq,
+	Neq,
+	Lt,
+	Gt,
+	Le,
+	Ge
+};
+struct BoolExp: public Exp_ {
+	Exp l, r;
+	BoolExpType t;
+	BoolExp(Exp left, BoolExpType type, Exp right);
+	void debug();
 };
 struct OpExp : public Exp_ {
 	Exp l;
@@ -39,6 +64,7 @@ struct OpExp : public Exp_ {
 	OpExp(Exp l, OpType op, Exp r);
 	void debug();
 };
+
 struct ParenExp : public Exp_ {
 	Exp exp;
 	ParenExp(Exp expr);

@@ -6,6 +6,7 @@ BISON_TARGET(parser
     parser.y
     ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.cc
     DEFINES_FILE ${CMAKE_CURRENT_BINARY_DIR}/parser.tab.hh
+    COMPILE_FLAGS "-Wcounterexamples"
 )
 
 add_library(libparser
