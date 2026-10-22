@@ -75,7 +75,7 @@ void yyerror(const char *s);
 
 %type <ival> INTEGER
 %type <exp> boollit
-%type <exp> intexpr
+%type <exp> valexpr
 %type <exp> boolexpr 
 %type <exp> valueexpr
 %type <exp> line 
@@ -112,18 +112,18 @@ endline:
 
 
 valueexpr:
-     intexpr
+     valexpr
      | boolexpr
      ;
 
-intexpr:
+valexpr:
       INTEGER { $$ = new NumExp($1); }
     | MINUS INTEGER %prec UMINUS { $$ = new NumExp(-$2); }
-    | intexpr PLUS intexpr { $$ = new OpExp($1, Plus, $3); }
-    | intexpr MINUS intexpr { $$ = new OpExp($1, Minus, $3); }
-    | intexpr MUL intexpr { $$ = new OpExp($1, Multiply, $3); }
-    | intexpr DIV intexpr { $$ = new OpExp($1, Divide, $3); }
-    | LPAREN intexpr RPAREN { $$ = new ParenExp($2); }
+    | valexpr PLUS valexpr { $$ = new OpExp($1, Plus, $3); }
+    | valexpr MINUS valexpr { $$ = new OpExp($1, Minus, $3); }
+    | valexpr MUL valexpr { $$ = new OpExp($1, Multiply, $3); }
+    | valexpr DIV valexpr { $$ = new OpExp($1, Divide, $3); }
+    | LPAREN valexpr RPAREN { $$ = new ParenExp($2); }
     ;
 
 boollit:
@@ -135,12 +135,12 @@ boolexpr:
     boollit
     | boolexpr AND boolexpr { $$ = new BoolExp($1, And, $3); }
     | boolexpr OR boolexpr { $$ = new BoolExp($1, Or, $3); }
-    | intexpr GT intexpr { $$ = new BoolExp($1, Gt, $3); }
-    | intexpr LT intexpr { $$ = new BoolExp($1, Lt, $3); }
-    | intexpr GE intexpr { $$ = new BoolExp($1, Ge, $3); }
-    | intexpr LE intexpr { $$ = new BoolExp($1, Le, $3); }
-    | intexpr EQ intexpr { $$ = new BoolExp($1, Eq, $3); }
-    | intexpr NEQ intexpr { $$ = new BoolExp($1, Neq, $3); }
+    | valexpr GT valexpr { $$ = new BoolExp($1, Gt, $3); }
+    | valexpr LT valexpr { $$ = new BoolExp($1, Lt, $3); }
+    | valexpr GE valexpr { $$ = new BoolExp($1, Ge, $3); }
+    | valexpr LE valexpr { $$ = new BoolExp($1, Le, $3); }
+    | valexpr EQ valexpr { $$ = new BoolExp($1, Eq, $3); }
+    | valexpr NEQ valexpr { $$ = new BoolExp($1, Neq, $3); }
     | LPAREN boolexpr RPAREN { $$ = new ParenExp($2); }
     ;
 

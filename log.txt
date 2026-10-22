@@ -1,0 +1,35 @@
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp6NumExpE[_ZTIN7libcomp6NumExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp5TFExpE[_ZTIN7libcomp5TFExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp7BoolExpE[_ZTIN7libcomp7BoolExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp5OpExpE[_ZTIN7libcomp5OpExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp8ParenExpE[_ZTIN7libcomp8ParenExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp7LineExpE[_ZTIN7libcomp7LineExpE]+0x10): undefined reference to `typeinfo for libcomp::ExpList_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp6EndExpE[_ZTIN7libcomp6EndExpE]+0x10): undefined reference to `typeinfo for libcomp::ExpList_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp6NumExpE[_ZTIN7libcomp6NumExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp5TFExpE[_ZTIN7libcomp5TFExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp7BoolExpE[_ZTIN7libcomp7BoolExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp5OpExpE[_ZTIN7libcomp5OpExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp8ParenExpE[_ZTIN7libcomp8ParenExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp7LineExpE[_ZTIN7libcomp7LineExpE]+0x10): undefined reference to `typeinfo for libcomp::ExpList_'
+/usr/bin/ld: /usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp6EndExpE[_ZTIN7libcomp6EndExpE]../libs/libcomp/liblibcomp.a(libcomp.cpp.o)+0x:10().data.rel.ro._ZTIN7libcomp6NumExpE: undefined reference to `[_ZTIN7libcomp6NumExpE]typeinfo for libcomp::ExpList_+0x'
+10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp5TFExpE[_ZTIN7libcomp5TFExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp7BoolExpE[_ZTIN7libcomp7BoolExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp5OpExpE[_ZTIN7libcomp5OpExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp8ParenExpE[_ZTIN7libcomp8ParenExpE]+0x10): undefined reference to `typeinfo for libcomp::Exp_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp7LineExpE[_ZTIN7libcomp7LineExpE]+0x10): undefined reference to `typeinfo for libcomp::ExpList_'
+/usr/bin/ld: ../libs/libcomp/liblibcomp.a(libcomp.cpp.o):(.data.rel.ro._ZTIN7libcomp6EndExpE[_ZTIN7libcomp6EndExpE]+0x10): undefined reference to `typeinfo for libcomp::ExpList_'
+collect2: error: ld returned 1 exit status
+collect2: error: ld returned 1 exit status
+collect2: error: ld returned 1 exit status
+make[2]: *** [tools/CMakeFiles/lex_debug.dir/build.make:106: bin/lex_debug] Error 1
+make[2]: *** [tools/CMakeFiles/parse_debug.dir/build.make:106: bin/parse_debug] Error 1
+make[1]: *** [CMakeFiles/Makefile2:331: tools/CMakeFiles/lex_debug.dir/all] Error 2
+make[1]: *** Waiting for unfinished jobs....
+make[1]: *** [CMakeFiles/Makefile2:364: tools/CMakeFiles/parse_debug.dir/all] Error 2
+make[2]: *** [src/CMakeFiles/comp.dir/build.make:107: bin/comp] Error 1
+make[1]: *** [CMakeFiles/Makefile2:298: src/CMakeFiles/comp.dir/all] Error 2
+make: *** [Makefile:91: all] Error 2
+error: recipe `build` failed on line 9 with exit code 2

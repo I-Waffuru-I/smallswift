@@ -20,7 +20,7 @@ target_include_directories(libparser PUBLIC
 
 
 target_link_libraries(libparser PUBLIC
-    # tokens.h
+    # Expr types and stuff 
     libcomp
     # voor lexer.h en yylex()
     liblexer
