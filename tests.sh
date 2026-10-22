@@ -69,3 +69,42 @@ else
     printf "\n\nFAIL PARSE (%d of %d invalid inputs not rejected properly)\n" "$bad_failed" "$bad_total"
     exit 1
 fi
+
+
+
+
+
+
+
+printf "\n\nTYPE (invalid inputs)\n"
+bad_failed=0
+bad_total=0
+for f in "$TEST"/type_bad/*.swift; do
+    [[ -e "$f" ]] || { printf "  FAIL  %s (file not found)\n" "$f"; bad_failed=$((bad_failed + 1)); continue; }
+    bad_total=$((bad_total + 1))
+
+    out="$("$PARSE_BIN" "$f" 2>&1)"
+    status=$?
+
+    if [[ $status -eq 0 ]]; then
+        printf "  FAIL  %s (invalid input was accepted)\n" "$f"
+        bad_failed=$((bad_failed + 1))
+    elif [[ $status -ge 128 ]]; then
+        printf "  FAIL  %s (crashed with signal %d)\n" "$f" $((status - 128))
+        bad_failed=$((bad_failed + 1))
+    elif [[ $status -ne 1 ]]; then
+        printf "  FAIL  %s (unexpected exit status %d)\n" "$f" "$status"
+        bad_failed=$((bad_failed + 1))
+    else
+        printf "  ok    %s\n" "$f"
+    fi
+done
+
+if [[ $bad_failed -eq 0 ]]; then
+    printf "\n\nTYPE PARSE (all %d invalid inputs rejected)\n" "$bad_total"
+else
+    printf "\n\nTYPE PARSE (%d of %d invalid inputs not rejected properly)\n" "$bad_failed" "$bad_total"
+    exit 1
+fi
+
+
