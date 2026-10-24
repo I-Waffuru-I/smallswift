@@ -29,7 +29,6 @@ int main(int argc, char** argv) {
 
    result->debug();
    std::cout << std::endl << std::endl;
-   result->evaltype();
 
 
     return 0;
