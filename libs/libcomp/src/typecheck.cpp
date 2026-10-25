@@ -1,3 +1,4 @@
+#pragma once
 #include <stdexcept>
 #include <utility>
 #include <vector>
@@ -18,26 +19,4 @@ const Symbol* Scope::lookup(str& name){
 			return &it->second;
     }
     return nullptr;
-};
-
-
-// // scope is een list aan defined values
-// struct Scope {
-// 	Iden id;
-// 	Scope* next;
-// 	Scope(Iden id, Scope* n) : id(id), next(n) {};
-// };
-// Scope* update(Scope* s, str i, Type t, int v);
-// int lookup(Scope* s, str id);
-
-
-bool TChecker::run(const std::vector<libcomp::Stm>& program){
-	return false;
-};
-
-Type TChecker::check(libcomp::Exp e){
-	return Type::Void();
-};
-void TChecker::check(libcomp::Stm s){
-
 };

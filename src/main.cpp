@@ -3,6 +3,7 @@
 #include "liblexer/lexer.h"
 #include "parser.tab.hh"
 #include "libcomp/parsevals.h"
+#include "libcomp/typecheck.h"
 
 int main(int argc, char** argv) {
     std::cout << "hey" << std::endl;
@@ -30,6 +31,9 @@ int main(int argc, char** argv) {
    result->debug();
    std::cout << std::endl << std::endl;
 
+
+   typecheck::TChecker checker;
+   checker.run(result);
 
     return 0;
 }

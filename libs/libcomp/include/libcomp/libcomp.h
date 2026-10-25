@@ -1,15 +1,19 @@
 #pragma once
+#include "libcomp/typecheck.h"
 namespace libcomp {
 
+using namespace typecheck;
 
 
 struct Stm_ { 
 	virtual ~Stm_(){};
 	virtual void debug() = 0;
+	virtual void check(Scope& s) = 0;
 };
 struct Exp_ {
 	virtual ~Exp_(){}
 	virtual void debug() = 0;
+	virtual Type check(Scope& s)=0;
 };
 struct ExpList_ {
 	virtual ~ExpList_(){};
@@ -26,12 +30,14 @@ struct NumExp : public Exp_ {
 	int num;
 	NumExp(int n);
 	void debug() override;
+	Type check(Scope& s) override;
 };
 
 struct TFExp : public Exp_ {
 	bool val;
 	TFExp(bool value);
 	void debug() override;
+	Type check(Scope& s) override;
 };
 
 
@@ -57,6 +63,7 @@ struct BoolExp: public Exp_ {
 	BoolExpType t;
 	BoolExp(Exp left, BoolExpType type, Exp right);
 	void debug() override;
+	Type check(Scope& s) override;
 };
 struct OpExp : public Exp_ {
 	Exp l;
@@ -64,12 +71,14 @@ struct OpExp : public Exp_ {
 	Exp r;
 	OpExp(Exp l, OpType op, Exp r);
 	void debug() override;
+	Type check(Scope& s) override;
 };
 
 struct ParenExp : public Exp_ {
 	Exp exp;
 	ParenExp(Exp expr);
 	void debug() override;
+	Type check(Scope& s) override;
 };
 
 struct LineExp : public ExpList_ {

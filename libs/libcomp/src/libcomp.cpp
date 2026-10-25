@@ -1,3 +1,4 @@
+#pragma once
 #include "libcomp/libcomp.h"
 #include <iostream>
 namespace libcomp {
@@ -39,6 +40,12 @@ void OpExp::debug() {
    std::cout << debugOpExp(op);
    r->debug();
 }
+Type OpExp::check(Scope& s) {
+   Type lt = l->check(s);
+   Type rt = r->check(s);
+
+   return lt;
+};
 
 const char* debugBoolExpType(BoolExpType t){
    switch (t) {
