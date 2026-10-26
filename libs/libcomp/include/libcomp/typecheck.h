@@ -21,6 +21,10 @@ struct Type {
   static Type Void() { return Type(Kind::Void); }
   static Type Error() { return Type(Kind::Error); }
   static Type Func(std::vector<Type> params, Type ret);
+
+  bool operator==(const Type& o) const;
+  bool operator!=(const Type& o) const { return !(*this == o); }
+
 };
 
 struct Symbol {
@@ -38,6 +42,7 @@ struct Scope {
   bool declare(str &name, Symbol sym);
   const Symbol *lookup(str &name);
 };
+
 
 // // scope is een list aan defined values
 // struct Scope {

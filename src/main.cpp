@@ -32,8 +32,8 @@ int main(int argc, char** argv) {
    std::cout << std::endl << std::endl;
 
 
-   typecheck::TChecker checker;
-   checker.run(result);
+   typecheck::Scope scope;
+   result->check(scope);
 
-    return 0;
+   return 0;
 }

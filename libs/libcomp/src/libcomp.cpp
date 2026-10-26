@@ -10,6 +10,9 @@ NumExp::NumExp(int n) : num(n){};
 void NumExp::debug() {
    std::cout << num;
 }
+Type NumExp::check(Scope &s){
+   return Type::Int();
+}
 
 TFExp::TFExp(bool val): val(val){};
 void TFExp::debug(){
@@ -19,6 +22,9 @@ void TFExp::debug(){
       std::cout << "false";
    }
 };
+Type TFExp::check(Scope &s) {
+   return Type::Bool();
+}
 
 
 
@@ -44,6 +50,11 @@ Type OpExp::check(Scope& s) {
    Type lt = l->check(s);
    Type rt = r->check(s);
 
+   if (lt != rt){
+      std::cerr << "Mismatched types" << std::endl;
+      exit(1);
+   }
+      
    return lt;
 };
 
@@ -66,12 +77,25 @@ void BoolExp::debug() {
    std::cout << debugBoolExpType(t);
    r->debug();
 }
+Type BoolExp::check(Scope& s) {
+   Type lt = l->check(s);
+   Type rt = r->check(s);
+
+   if (lt != rt){
+      std::cerr << "Mismatched types" << std::endl;
+      exit(1);
+   }
+   return Type::Bool();
+};
 
 ParenExp::ParenExp(Exp expr): exp(expr) {};
 void ParenExp::debug() {
    std::cout << '(';
    exp->debug();
    std::cout << ')';
+}
+Type ParenExp::check(Scope &s){
+   return exp->check(s);
 }
 
 LineExp::LineExp(Exp e, Expl t) : exp(e), tail(t) {};
@@ -80,11 +104,18 @@ void LineExp::debug(){
    std::cout << ";" << std::endl;
    exp->debug();
 }
+Type LineExp::check(Scope &s){
+   tail->check(s);
+   return exp->check(s);
+};
 
 EndExp::EndExp(Exp e) : exp(e) {};
 void EndExp::debug() {
    exp->debug();
 }
+Type EndExp::check(Scope &s){
+   return exp->check(s);
+};
 
 
 
