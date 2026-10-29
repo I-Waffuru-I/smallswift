@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdio>
+#include <string>
 #include "libcomp/libcomp.h"
 #include "liblexer/lexer.h"
 
@@ -22,8 +23,9 @@ void yyerror(const char *s);
 
 %union {
     int ival;
+    char* sval;
     libcomp::Exp exp;
-    libcomp::Expl expl;
+    libcomp::StmList* stml;
     libcomp::Stm stm;
 }
 
@@ -74,40 +76,47 @@ void yyerror(const char *s);
 %right UMINUS
 
 %type <ival> INTEGER
+%type <sval> IDENTIFIER
 %type <exp> boollit
 %type <exp> valexpr
 %type <exp> boolexpr 
 %type <exp> valueexpr
-%type <exp> line 
-%type <expl> program
+%type <stml> program
+%type <stm> line 
+%type <stm> declarestm
+%type <stm> assignstm
 
 
 /* ---- */
 %%
 
 program:
-      /* leeg programma */   { $$ = nullptr; result = $$; }
+      /* leeg programma */   { $$ = new StmList(); result = $$; }
     | program line {
-        if ($2 == nullptr) {
-            $$ = $1;
-        } else if ($1 == nullptr) {
-            $$ = new EndExp($2);
-            result = $$;
-        } else {
-            $$ = new LineExp($2, $1);
-            result = $$;
-        }
+        if ($2 != nullptr) $1->add($2);
+        $$ = $1;
     }
     ;
 
 line:
     endline { $$ = nullptr; }
-    | valueexpr endline { $$ = $1; }
+    | valueexpr endline { $$ = new ExpStm($1); }
+    | declarestm endline {$$ = $1; }
+    | assignstm endline {$$ = $1; }
     ;
 
 endline:
     NEWLINE 
     | SEMICOLON
+    ;
+
+declarestm:
+    LET IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, true);  free($2); }
+    | VAR IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, false); free($2); }
+    ;
+
+assignstm:
+    IDENTIFIER ASSIGN valueexpr { $$ = new AssignStm($1, $3); free($1); }
     ;
 
 

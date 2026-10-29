@@ -1,7 +1,27 @@
 #pragma once
 #include "libcomp/libcomp.h"
 #include <iostream>
+#include <vector>
 namespace libcomp {
+
+
+void StmList::debug(){
+   for (Stm s : stms) {
+      s->debug();
+   }
+};
+void StmList::check(Scope &s){
+   for (Stm st : stms) {
+      st->check(s);
+   }
+};
+
+
+void ExpStm::debug(){exp->debug();};
+void ExpStm::check(Scope &s) {
+   exp->check(s);
+};
+
 
 /*
 * Literals
@@ -10,7 +30,7 @@ NumExp::NumExp(int n) : num(n){};
 void NumExp::debug() {
    std::cout << num;
 }
-Type NumExp::check(Scope &s){
+Type NumExp::check(Scope &_){
    return Type::Int();
 }
 
@@ -22,14 +42,50 @@ void TFExp::debug(){
       std::cout << "false";
    }
 };
-Type TFExp::check(Scope &s) {
+Type TFExp::check(Scope &_) {
    return Type::Bool();
-}
+};
+
+
+
+void DeclareStm::debug(){
+   if (mut) {
+      std::cout << "let ";
+   } else {
+      std::cout << "let ";
+   }
+   std::cout << id << " = ";
+   val->debug();
+};
+void DeclareStm::check(Scope &s){
+   val->check(s);
+};
+void AssignStm::debug(){
+   std::cout << id << " = ";
+   val->debug();
+};
+void AssignStm::check(Scope &s){
+   val->check(s);
+};
+
+
+
+void FunCall::debug() {
+
+};
+Type FunCall::check(Scope &_){
+
+   std::vector<Type> params;
+   return Type::Func(params, Type::Bool());
+};
+
+
+
 
 
 
 /* 
-*
+* operations
 */
 char debugOpExp(OpType op) {
    switch (op) {
@@ -97,25 +153,6 @@ void ParenExp::debug() {
 Type ParenExp::check(Scope &s){
    return exp->check(s);
 }
-
-LineExp::LineExp(Exp e, Expl t) : exp(e), tail(t) {};
-void LineExp::debug(){
-   tail->debug();
-   std::cout << ";" << std::endl;
-   exp->debug();
-}
-Type LineExp::check(Scope &s){
-   tail->check(s);
-   return exp->check(s);
-};
-
-EndExp::EndExp(Exp e) : exp(e) {};
-void EndExp::debug() {
-   exp->debug();
-}
-Type EndExp::check(Scope &s){
-   return exp->check(s);
-};
 
 
 

@@ -67,7 +67,8 @@ return { return (RETURN); }
 
 {digit}+ { yylval.ival = atoi(yytext); return (INTEGER); }
 
-{identifier} { return (IDENTIFIER); }
+ /* yytext wordt overwritten, moet die clonene en free() callen in parser */
+{identifier} { yylval.sval = strdup(yytext); return (IDENTIFIER); }
 
 
 . {

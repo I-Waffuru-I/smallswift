@@ -3,4 +3,4 @@
 
 
 // output expression list that contains the parsed program
-libcomp::Expl result = nullptr;
+libcomp::Stm result = nullptr;

@@ -2,4 +2,4 @@
 
 // waar bison naar output
 // defined in libcomp.cpp
-extern libcomp::Expl result;
+extern libcomp::Stm result;
