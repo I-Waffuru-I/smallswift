@@ -4,7 +4,6 @@
 }
 
 %{
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstdio>
@@ -16,6 +15,10 @@ int yylex();
 void yyerror(const char *s);
 
 %}
+
+%locations
+
+%define parse.error detailed 
 
 %code {
     using namespace libcomp;
@@ -105,14 +108,15 @@ line:
     | assignstm endline {$$ = $1; }
     ;
 
+
 endline:
     NEWLINE 
     | SEMICOLON
     ;
 
 declarestm:
-    LET IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, true);  free($2); }
-    | VAR IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, false); free($2); }
+    LET IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, false); free($2); }
+    | VAR IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, true); free($2); }
     ;
 
 assignstm:
@@ -127,6 +131,7 @@ valueexpr:
 
 valexpr:
       INTEGER { $$ = new NumExp($1); }
+    | IDENTIFIER { $$ = new VariableExp($1); free($1); }
     | MINUS INTEGER %prec UMINUS { $$ = new NumExp(-$2); }
     | valexpr PLUS valexpr { $$ = new OpExp($1, Plus, $3); }
     | valexpr MINUS valexpr { $$ = new OpExp($1, Minus, $3); }
@@ -159,6 +164,7 @@ boolexpr:
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "parse error: %s\n", s);
+    // fprintf(stderr, "parse error: %s\n", s);
+    fprintf(stderr,"Parse error | line: %d, %d\n%s\n",yylloc.first_line, yylloc.first_column, s);
     exit(1);
 }

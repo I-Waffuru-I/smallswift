@@ -6,30 +6,33 @@ voor multiline, extra var naar 'result' maken voor context bij te houden? bvb de
 ## LInks
 
 [bison simpleC](https://wischik.com/lu/programmer/re-ast.html#header)
+[swiftlang](https://docs.swift.org/latest/documentation/the-swift-programming-language)
 
 # Tasks
 ## Basics
+Basisniveau. Deze features moet je minstens ondersteunen:
 
-- [ ] types Int en Bool
+- [x] types Int en Bool
 - [ ] Int literals: enkel decimaal
-- [ ] Bool literals true en false
+- [x] Bool literals true en false
 - [ ] Variable en constant definities, met of zonder vermelding van het type. Declaraties zonder initiële waarde hoef je niet te ondersteunen.
+    - [ ] Met type
+    - [x] Zonder type
 - [ ] functions en function calls (call expressions). Ook recursieve calls!
 - [ ] return statement
 - [x] operator expressions: enkel de operators vermeld in de files lexer.c en tokens.h, zie beneden
-- [ ] Assignment statement (in Swift is een assignment eigenlijk een expressie die tot een soort NULL waarde evalueert, maar dat moet je zo niet implementeren).
+- [x] Assignment statement (in Swift is een assignment eigenlijk een expressie die tot een soort NULL waarde evalueert, maar dat moet je zo niet implementeren).
 - [ ] if-else (if-statement), while loops (while-statement)
 - [ ] print als ingebouwde functie
-- [ ] expressions als statements
-- [ ] line comments
+- [x] expressions als statements
+- [x] line comments
 
 
 
 ## Intermediate
 Deze features zijn optioneel. Je kan er ook uit selecteren; je hoeft ze niet allemaal te doen. Maar wees op de verdediging wel duidelijk wat je wel, en wat je niet ondersteunt. 
-Basisniveau. Deze features moet je minstens ondersteunen:
 
-- [ ] block comments (dit wordt uitgelegd in de lex-manual)
+- [x] block comments (dit wordt uitgelegd in de lex-manual)
 - [ ] optional types, samen met het "if let" statement
 - [ ] strings
 - [ ] tuples

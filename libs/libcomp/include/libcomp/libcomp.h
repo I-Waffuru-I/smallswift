@@ -44,8 +44,6 @@ struct DeclareStm : public Stm_ {
 	void debug() override;
 	void check(Scope &s) override;
 };
-
-
 struct AssignStm : public Stm_ {
 	str id;
 	Exp val;
@@ -53,22 +51,29 @@ struct AssignStm : public Stm_ {
 	void debug() override;
 	void check(Scope &s) override;
 };
+struct VariableExp : public Exp_ {
+	str id;
+	VariableExp(str id): id(id) {};
+	void debug() override;
+	Type check(Scope &s) override;
+};
 
 
 
 struct NumExp : public Exp_ {
   int num;
   NumExp(int n);
+
   void debug() override;
   Type check(Scope &s) override;
 };
-
 struct TFExp : public Exp_ {
   bool val;
   TFExp(bool value);
   void debug() override;
   Type check(Scope &s) override;
 };
+
 
 
 struct FunDeclare: public Stm_ {
@@ -79,7 +84,6 @@ struct FunDeclare: public Stm_ {
 	void debug() override;
 	void check(Scope &s) override;
 };
-
 struct FunCall: public Exp_ {
 
   void debug() override;

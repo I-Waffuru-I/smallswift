@@ -7,8 +7,13 @@
   int line_nr = 1;
   int col_nr = 1; 
 
-%}
+#define YY_USER_ACTION \
+  yylloc.first_line = yylloc.last_line = line_nr; \
+  yylloc.first_column = col_nr; \
+  col_nr += yyleng; \
+  yylloc.last_column = col_nr;
 
+%}
 
 digit [0-9]
 letter [a-zA-Z]
@@ -19,6 +24,8 @@ identifier {letter}({letdig})*
   /* --- */
 %%
 
+\/\/.*(\n\r|\n|\r\n|\r) { line_nr++; col_nr = 1; return (NEWLINE); }
+\/\*(.*(\n\r|\n|\r\n|\r))*\*\/ { line_nr++; col_nr = 1; return (NEWLINE); }
 
 
 \+ { return (PLUS); }
@@ -46,6 +53,7 @@ identifier {letter}({letdig})*
 , { return (COMMA); }
 -\> { return (ARROW); }
 
+
 Int { return (INTTYPE); }
 Bool { return (BOOLTYPE); }
 
@@ -60,9 +68,8 @@ while { return (WHILE); }
 var { return (VAR); }
 let { return (LET); }
 return { return (RETURN); }
-(\r\n|\r|\n) { return (NEWLINE); }
 
-
+(\r\n|\r|\n) { line_nr++; col_nr = 1; return (NEWLINE); }
 [ \t\v]+ {}
 
 {digit}+ { yylval.ival = atoi(yytext); return (INTEGER); }

@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
    }
 
    int parse_res = yyparse();
-   if (parse_res == 0) {
+   if (parse_res == 0 && result) {
       std::cout << std::endl << "parse successful" << std::endl;
    } else {
       exit(parse_res);
@@ -32,8 +32,10 @@ int main(int argc, char** argv) {
    std::cout << std::endl << std::endl;
 
 
-   typecheck::Scope scope;
-   result->check(scope);
+   typecheck::Scope globalscope;
+   typecheck::registerStdFuncs(globalscope);
+   typecheck::Scope program = typecheck::Scope(globalscope);
+   result->check(program);
 
    return 0;
 }
