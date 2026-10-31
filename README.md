@@ -13,7 +13,8 @@ voor multiline, extra var naar 'result' maken voor context bij te houden? bvb de
 Basisniveau. Deze features moet je minstens ondersteunen:
 
 - [x] types Int en Bool
-- [ ] Int literals: enkel decimaal
+    - [x] Int literals: enkel decimaal
+    - [x] -Int literal is separate from MIN operation
 - [x] Bool literals true en false
 - [ ] Variable en constant definities, met of zonder vermelding van het type. Declaraties zonder initiële waarde hoef je niet te ondersteunen.
     - [ ] Met type
@@ -22,8 +23,10 @@ Basisniveau. Deze features moet je minstens ondersteunen:
 - [ ] return statement
 - [x] operator expressions: enkel de operators vermeld in de files lexer.c en tokens.h, zie beneden
 - [x] Assignment statement (in Swift is een assignment eigenlijk een expressie die tot een soort NULL waarde evalueert, maar dat moet je zo niet implementeren).
-- [ ] if-else (if-statement), while loops (while-statement)
-- [ ] print als ingebouwde functie
+- [ ] conditions
+    - [ ] if-else 
+    - [ ] while loops (while-statement)
+- [x] print als ingebouwde functie
 - [x] expressions als statements
 - [x] line comments
 
@@ -42,3 +45,5 @@ Deze features zijn optioneel. Je kan er ook uit selecteren; je hoeft ze niet all
 - [ ] break, continue
 - [ ] enumerations
 - [ ] function overloading
+
+

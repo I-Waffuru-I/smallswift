@@ -12,4 +12,13 @@ true && (false || 90<100+2) // hey 5 +2
 let ABCJJADJSD = 82882
 50 - 28
 */
-let b = 5 + a
+let b = 5 + a;;
+do {
+    let c = b + 2
+}
+
+if (b < a) {
+    let c = 2
+} else {
+    let c = 10
+}

@@ -68,6 +68,7 @@ while { return (WHILE); }
 var { return (VAR); }
 let { return (LET); }
 return { return (RETURN); }
+do { return (DO); }
 
 (\r\n|\r|\n) { line_nr++; col_nr = 1; return (NEWLINE); }
 [ \t\v]+ {}

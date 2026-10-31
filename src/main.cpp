@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
       exit(parse_res);
    }
 
-   result->debug();
+   result->debug(0);
    std::cout << std::endl << std::endl;
 
 

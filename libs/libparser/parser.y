@@ -70,6 +70,7 @@ void yyerror(const char *s);
 %token INTTYPE    292
 %token BOOLTYPE   293
 %token RETURN     294
+%token DO         295
 
 %left PLUS MINUS
 %left MUL DIV
@@ -80,38 +81,53 @@ void yyerror(const char *s);
 
 %type <ival> INTEGER
 %type <sval> IDENTIFIER
-%type <exp> boollit
-%type <exp> valexpr
+%type <exp> boollit valexpr valueexpr
 %type <exp> boolexpr 
-%type <exp> valueexpr
-%type <stml> program
-%type <stm> line 
-%type <stm> declarestm
-%type <stm> assignstm
+%type <stml> program stmts
+%type <stm> line
+%type <stm> declarestm assignstm
+%type <stm> block ifstm
+
 
 
 /* ---- */
 %%
 
 program:
-      /* leeg programma */   { $$ = new StmList(); result = $$; }
-    | program line {
+       stmts { result = $$; }
+
+
+
+
+block:
+     LBRACE stmts RBRACE { $$ = new BlockStm($2); }
+
+stmts:
+      /* leeg programma */   { $$ = new StmList(); }
+    | stmts line {
         if ($2 != nullptr) $1->add($2);
         $$ = $1;
     }
     ;
 
+
 line:
     endline { $$ = nullptr; }
     | valueexpr endline { $$ = new ExpStm($1); }
-    | declarestm endline {$$ = $1; }
-    | assignstm endline {$$ = $1; }
+    | declarestm endline
+    | assignstm endline 
+    | DO block endline { $$ = new DoBlockStm($2); }
+    | ifstm endline 
     ;
-
-
 endline:
     NEWLINE 
     | SEMICOLON
+    ;
+
+ifstm: 
+    IF valueexpr block { $$ = new IfStm($2, $3); } 
+    | IF valueexpr block ELSE block { $$ = new IfStm($2, $3, $5); } 
+    | IF valueexpr block ELSE ifstm { $$ = new IfStm($2, $3, $5); } 
     ;
 
 declarestm:
@@ -122,7 +138,6 @@ declarestm:
 assignstm:
     IDENTIFIER ASSIGN valueexpr { $$ = new AssignStm($1, $3); free($1); }
     ;
-
 
 valueexpr:
      valexpr

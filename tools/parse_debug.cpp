@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 
    if (result) {
       std::cout << "debugging parsed tree:" << std::endl;
-      result->debug();
+      result->debug(0);
    } else {
       std::cout << "result is empty" << std::endl;
    }
