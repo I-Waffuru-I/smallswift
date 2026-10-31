@@ -34,15 +34,24 @@ struct Symbol {
    bool isMutable;
 };
 
+struct DebugInfo {
+   size_t scopedepth;
+   size_t linenr;
+};
+
 struct Scope {
    std::unordered_map<str, Symbol> symbols_;
    Scope *parent_;
+   DebugInfo dbg;
 
-   Scope(Scope *parent = nullptr) : parent_(parent) {}
+   Scope(Scope *parent = nullptr) : parent_(parent) {
+      if(parent) dbg = parent->dbg;
+   }
 
    // true/false volgens of symbol al bestaat
    bool declare(str &name, Symbol sym);
    const Symbol *lookup(str &name);
+   void error(str out);
 };
 
 void registerStdFuncs(Scope& s);

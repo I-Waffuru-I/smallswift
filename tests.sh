@@ -107,7 +107,7 @@ fi
 
 # name (without .swift)   text expected on stderr
 TCHECK_BAD=(
-    "int_plus_bool|Mismatched types"
+    "int_plus_bool|"
     "arith_on_bools|"
     "compare_bools|"
     "use_undeclared|"

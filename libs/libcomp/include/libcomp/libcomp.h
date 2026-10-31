@@ -1,5 +1,6 @@
 #pragma once
 #include "libcomp/typecheck.h"
+#include <utility>
 namespace libcomp {
 
 using namespace typecheck;
@@ -83,7 +84,12 @@ struct DeclareStm : public Stm_ {
 	str id;
 	Exp val;
 	bool mut;
-	DeclareStm(str id, Exp v, bool m): id(id), val(v), mut(m) {};
+   Type exptype;
+	DeclareStm(str id, Exp v, bool m, Type* etype = nullptr): id(id), val(v), mut(m) { 
+      if (etype) {
+         exptype = *etype;
+      } else exptype = Type::Void();
+   };
 	void debug(size_t depth) override;
 	void check(Scope &s) override;
 };

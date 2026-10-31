@@ -2,6 +2,7 @@
 #include "libcomp/libcomp.h"
 #include "libcomp/typecheck.h"
 #include <cstddef>
+#include <format>
 #include <iostream>
 #include <vector>
 namespace libcomp {
@@ -25,6 +26,7 @@ void StmList::debug(size_t depth) {
 void StmList::check(Scope &s) {
    for (Stm st : stms) {
       st->check(s);
+      s.dbg.linenr++;
    }
 };
 
@@ -56,6 +58,7 @@ void DoBlockStm::debug(size_t depth) {
    block->debug(depth);
 };
 void DoBlockStm::check(Scope &s) { block->check(s); };
+
 void IfStm::debug(size_t depth) {
    std::cout << "if ";
    cond->debug(depth);
@@ -68,8 +71,7 @@ void IfStm::debug(size_t depth) {
 void IfStm::check(Scope &s) {
    Type c = cond->check(s);
    if (c.kind != typecheck::Type::Kind::Bool) {
-      std::cerr << "Expected bool type in condition, not [" << c.toString() << "]"
-         << std::endl;
+      s.error(std::format("Expected bool type in condition, not [{}]",c.toString()));
       exit(1);
    }
    then->check(s);
@@ -103,8 +105,7 @@ void DeclareStm::debug(size_t depth) {
 void DeclareStm::check(Scope &s) {
    const Symbol *prev = s.lookup(id);
    if (prev) {
-      std::cerr << "Invalid redeclaration of [" << id << "]" << std::endl;
-      exit(1);
+      s.error("Invalid redeclaration of ["+id+"]");
    }
    Type t = val->check(s);
    Symbol sym = {t, mut};
@@ -118,25 +119,18 @@ void AssignStm::check(Scope &s) {
    Type t = val->check(s);
    const Symbol *sy = s.lookup(id);
    if (!sy) {
-      std::cerr << "Tried to set [" << id << "] but it is not declared"
-         << std::endl;
-      exit(1);
+      s.error("Tried to set [" + id + "] but it is not declared");
    } else if (!sy->isMutable) {
-      std::cerr << "Tried to set [" << id << "] but it is not defined as mutable"
-         << std::endl;
-      exit(1);
+      s.error("Tried to set [" +id + "] but it is not defined as mutable");
    } else if (sy->type != t) {
-      std::cerr << "Tried to set [" << id << "], can't assign [" << t.toString()
-         << "] to a [" << sy->type.toString() << "]" << std::endl;
-      exit(1);
+      s.error(std::format("Tried to set [{}], can't assign [{}] to a [{}]",id, sy->type.toString(),t.toString() ));
    }
 };
 void VariableExp::debug(size_t depth) { std::cout << id; };
 Type VariableExp::check(Scope &s) {
    const Symbol *sy = s.lookup(id);
    if (!sy) {
-      std::cerr << "Cannot find variable [" << id << "] in scope" << std::endl;
-      exit(1);
+      s.error(std::format("Cannot find variable [{}] in scope", id ));
    }
    return sy->type;
 };
@@ -172,15 +166,10 @@ Type OpExp::check(Scope &s) {
    Type rt = r->check(s);
 
    if (lt != rt) {
-      std::cerr << "Mismatched types" << std::endl;
-      exit(1);
+      s.error(std::format("Can't apply operation [{}] to types [{}] and [{}]", debugOpExp(op), lt.toString(), rt.toString()));
    } else if (lt.kind != typecheck::Type::Kind::Int) {
-      std::cerr << "Can't apply operation [" << debugOpExp(op) << "] to types ["
-         << lt.toString() << "] and [" << rt.toString() << "]"
-         << std::endl;
-      exit(1);
+      s.error(std::format("Can't apply operation [{}] to types [{}] and [{}]", debugOpExp(op), lt.toString(), rt.toString()));
    }
-
    return lt;
 };
 
@@ -228,10 +217,9 @@ Type BoolExp::check(Scope &s) {
       std::cerr << "Mismatched types" << std::endl;
       exit(1);
    } else if (lt.kind == typecheck::Type::Kind::Bool && t != And && t != Or) {
-      std::cerr << "Can't apply operation [" << debugBoolExpType(t)
-         << "] to types [" << lt.toString() << "] and [" << rt.toString()
-         << "]" << std::endl;
-      exit(1);
+      s.error(
+         std::format("Can't apply operation [{}] to types [{}] and [{}]",
+              debugBoolExpType(t), lt.toString(), rt.toString()) );
    }
    return Type::Bool();
 };

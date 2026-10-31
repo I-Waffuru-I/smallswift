@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <string>
 #include "libcomp/libcomp.h"
+#include "libcomp/typecheck.h"
 #include "liblexer/lexer.h"
 
 int yylex();
@@ -22,6 +23,7 @@ void yyerror(const char *s);
 
 %code {
     using namespace libcomp;
+    using namespace typecheck;
 }
 
 %union {
@@ -30,6 +32,7 @@ void yyerror(const char *s);
     libcomp::Exp exp;
     libcomp::StmList* stml;
     libcomp::Stm stm;
+    typecheck::Type* typ;
 }
 
 /* zou nice zijn om da gwn te importen van tokens.h ma idk of da gaat */
@@ -81,6 +84,7 @@ void yyerror(const char *s);
 
 %type <ival> INTEGER
 %type <sval> IDENTIFIER
+%type <typ> littype
 %type <exp> boollit valexpr valueexpr
 %type <exp> boolexpr 
 %type <stml> program stmts
@@ -132,7 +136,13 @@ ifstm:
 
 declarestm:
     LET IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, false); free($2); }
+    | LET IDENTIFIER COLON littype ASSIGN valueexpr { $$ = new DeclareStm($2, $6, false, $4); free($2); free($4); }
     | VAR IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, true); free($2); }
+    | VAR IDENTIFIER COLON littype ASSIGN valueexpr { $$ = new DeclareStm($2, $6, true, $4); free($2); free($4); }
+    ;
+littype:
+    INTTYPE {$$ = new Type(Type::Int()); }
+    | BOOLTYPE {$$ = new Type(Type::Bool()); }
     ;
 
 assignstm:
@@ -172,7 +182,6 @@ boolexpr:
     | valexpr NEQ valexpr { $$ = new BoolExp($1, Neq, $3); }
     | LPAREN boolexpr RPAREN { $$ = new ParenExp($2); }
     ;
-
 
 
 /*  ---- */

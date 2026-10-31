@@ -1,5 +1,7 @@
 #pragma once
+#include <iostream>
 #include <stdexcept>
+#include <format>
 #include <utility>
 #include <vector>
 #include "libcomp/libcomp.h"
@@ -38,6 +40,7 @@ str Type::toString() const {
     return "?";
 }
 
+
 bool Scope::declare(str& name, Symbol sym) {
 	// returns een pair<iter, bool>
 	return symbols_.emplace(name, std::move(sym)).second;
@@ -51,10 +54,16 @@ const Symbol* Scope::lookup(str& name){
     return nullptr;
 };
 
+void Scope::error(str out){
+   std::cerr << "line ["<< dbg.linenr <<"]"<< out << std::endl;
+   exit(1);
+}
+
 void typecheck::registerStdFuncs(Scope& s){
    str printn = "print";
    Type printt = Type::Func({Type::Any()}, Type::Void());
    Symbol prints = {printt, false};
    s.declare(printn, prints);
 }
+
 
