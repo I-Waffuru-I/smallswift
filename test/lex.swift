@@ -6,7 +6,7 @@ abc d8f
 ! == != = ;
 : , ->
 ( ) { }
-var let
+var let //
 print true false
 if else while
 func return
