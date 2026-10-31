@@ -12,9 +12,9 @@ expected="$(cat "$LEX_EXPECTED";)"
 echo "actual: [$actual]"
 echo "expected: [$expected]"
 if [[ "$actual" == "$expected" ]]; then
-    printf "\n\nPASS LEX\n"
+    printf "\n\n\033[32mPASS\033[0m LEX\n"
 else
-    printf "\n\nFAIL LEX\n"
+    printf "\n\n\033[32mFAIL\033[0m LEX\n"
     diff <(printf '%s' "${actual%x}") <(printf '%s' "${expected%x}")
     exit 1
 fi
@@ -23,9 +23,9 @@ PARSE_BIN="$BUILD/parse_debug"
 
 parserslt=$("$PARSE_BIN" "$TEST/parse.ok.swift") #> /dev/null
 if [[ $? -eq 0 ]]; then
-    printf "\n\nPASS PARSE (valid input accepted)\n"
+    printf "\n\n\033[32mPASS\033[0m PARSE (valid input accepted)\n"
 else
-    printf "\n\nFAIL PARSE (valid input was rejected)\n"
+    printf "\n\n\033[32mFAIL\033[0m PARSE (valid input was rejected)\n"
     printf "\n$parserslt\n"
 fi
 
@@ -39,7 +39,7 @@ printf "\n\nPARSE (invalid inputs)\n"
 bad_failed=0
 bad_total=0
 for f in "$TEST"/parse_bad/*.swift; do
-    [[ -e "$f" ]] || { printf "  FAIL  %s (file not found)\n" "$f"; bad_failed=$((bad_failed + 1)); continue; }
+    [[ -e "$f" ]] || { printf "  \033[32mFAIL\033[0m  %s (file not found)\n" "$f"; bad_failed=$((bad_failed + 1)); continue; }
     bad_total=$((bad_total + 1))
 
     out="$("$PARSE_BIN" "$f" 2>&1)"
@@ -64,9 +64,9 @@ for f in "$TEST"/parse_bad/*.swift; do
 done
 
 if [[ $bad_failed -eq 0 ]]; then
-    printf "\n\nPASS PARSE (all %d invalid inputs rejected)\n" "$bad_total"
+    printf "\n\n\033[32mPASS\033[0m PARSE (all %d invalid inputs rejected)\n" "$bad_total"
 else
-    printf "\n\nFAIL PARSE (%d of %d invalid inputs not rejected properly)\n" "$bad_failed" "$bad_total"
+    printf "\n\n\033[32mFAIL\033[0m PARSE (%d of %d invalid inputs not rejected properly)\n" "$bad_failed" "$bad_total"
     exit 1
 fi
 
@@ -100,9 +100,9 @@ for f in "$TEST"/tcheck_ok/*.swift; do
 done
 
 if [[ $ok_failed -eq 0 ]]; then
-    printf "\n\nPASS TYPECHECK (all %d valid inputs accepted)\n" "$ok_total"
+    printf "\n\n\033[32mPASS\033[0m TYPECHECK (all %d valid inputs accepted)\n" "$ok_total"
 else
-    printf "\n\nFAIL TYPECHECK (%d of %d valid inputs rejected)\n" "$ok_failed" "$ok_total"
+    printf "\n\n\033[32mFAIL\033[0m TYPECHECK (%d of %d valid inputs rejected)\n" "$ok_failed" "$ok_total"
 fi
 
 # name (without .swift)   text expected on stderr
@@ -152,9 +152,9 @@ for entry in "${TCHECK_BAD[@]}"; do
 done
 
 if [[ $tbad_failed -eq 0 ]]; then
-    printf "\n\nPASS TYPECHECK (all %d invalid inputs rejected)\n" "$tbad_total"
+    printf "\n\n\033[32mPASS\033[0m TYPECHECK (all %d invalid inputs rejected)\n" "$tbad_total"
 else
-    printf "\n\nFAIL TYPECHECK (%d of %d invalid inputs not rejected properly)\n" "$tbad_failed" "$tbad_total"
+    printf "\n\n\033[31mFAIL\033[0m TYPECHECK (%d of %d invalid inputs not rejected properly)\n" "$tbad_failed" "$tbad_total"
 fi
 
 if [[ $ok_failed -ne 0 || $tbad_failed -ne 0 ]]; then
