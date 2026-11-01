@@ -2,6 +2,7 @@ add_library(libcomp
     src/libcomp.cpp
     src/parsevals.cpp
     src/typecheck.cpp
+    src/interp.cpp
 )
 
 target_include_directories(libcomp PUBLIC

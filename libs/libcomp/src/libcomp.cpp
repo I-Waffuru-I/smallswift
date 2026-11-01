@@ -1,4 +1,3 @@
-#pragma once
 #include "libcomp/libcomp.h"
 #include "libcomp/typecheck.h"
 #include <cstddef>
@@ -29,12 +28,15 @@ void StmList::check(Scope &s) {
       s.dbg.linenr++;
    }
 };
+void StmList::interp(Context &c) {
+} ;
 
 void ExpStm::debug(size_t depth) {
    indent(depth);
    exp->debug(depth);
 };
 void ExpStm::check(Scope &s) { exp->check(s); };
+void ExpStm::interp(Context &c) { }
 
 
 
@@ -52,12 +54,14 @@ void BlockStm::check(Scope &s) {
    Scope inner(s);
    stms->check(inner);
 };
+void BlockStm::interp(Context &c) { }
 
 void DoBlockStm::debug(size_t depth) {
    std::cout << "do ";
    block->debug(depth);
 };
 void DoBlockStm::check(Scope &s) { block->check(s); };
+void DoBlockStm::interp(Context &c) { }
 
 void IfStm::debug(size_t depth) {
    std::cout << "if ";
@@ -78,10 +82,17 @@ void IfStm::check(Scope &s) {
    if (els)
       els->check(s);
 };
+void IfStm::interp(Context &c) { }
+
+
 
 /*
  * functions
  */
+
+void FunDeclare::debug(size_t depth) { }
+void FunDeclare::check(Scope &s) { }
+void FunDeclare::interp(Context &c) { }
 void FunCall::debug(size_t depth) {
 
 };
@@ -89,6 +100,7 @@ Type FunCall::check(Scope &_) {
    std::vector<Type> params;
    return Type::Func(params, Type::Bool());
 };
+
 
 /*
  * variables
@@ -111,6 +123,8 @@ void DeclareStm::check(Scope &s) {
    Symbol sym = {t, mut};
    s.declare(id, sym);
 };
+void DeclareStm::interp(Context &c) { }
+
 void AssignStm::debug(size_t depth) {
    std::cout << id << " = ";
    val->debug(depth);
@@ -126,6 +140,8 @@ void AssignStm::check(Scope &s) {
       s.error(std::format("Tried to set [{}], can't assign [{}] to a [{}]",id, sy->type.toString(),t.toString() ));
    }
 };
+void AssignStm::interp(Context &c) { }
+
 void VariableExp::debug(size_t depth) { std::cout << id; };
 Type VariableExp::check(Scope &s) {
    const Symbol *sy = s.lookup(id);
@@ -219,7 +235,7 @@ Type BoolExp::check(Scope &s) {
    } else if (lt.kind == typecheck::Type::Kind::Bool && t != And && t != Or) {
       s.error(
          std::format("Can't apply operation [{}] to types [{}] and [{}]",
-              debugBoolExpType(t), lt.toString(), rt.toString()) );
+              debugBoolExpType(t), lt.toString(), rt.toString()));
    }
    return Type::Bool();
 };

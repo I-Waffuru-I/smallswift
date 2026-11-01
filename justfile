@@ -16,6 +16,8 @@ lex file: build
 
 parse file: build
     ./{{build_dir}}/bin/parse_debug {{file}}
+tcheck file: build
+    ./{{build_dir}}/bin/tcheck_debug {{file}}
 
 clean:
     rm -rf {{build_dir}}

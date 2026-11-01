@@ -16,15 +16,17 @@ Basisniveau. Deze features moet je minstens ondersteunen:
     - [x] Int literals: enkel decimaal
     - [x] -Int literal is separate from MIN operation
 - [x] Bool literals true en false
-- [ ] Variable en constant definities, met of zonder vermelding van het type. Declaraties zonder initiële waarde hoef je niet te ondersteunen.
-    - [ ] Met type
+- [x] Variable en constant definities, met of zonder vermelding van het type. Declaraties zonder initiële waarde hoef je niet te ondersteunen.
+    - [x] Met type
     - [x] Zonder type
 - [ ] functions en function calls (call expressions). Ook recursieve calls!
-- [ ] return statement
+    - [ ] function definition 
+    - [ ] function call 
+    - [ ] return statement
 - [x] operator expressions: enkel de operators vermeld in de files lexer.c en tokens.h, zie beneden
 - [x] Assignment statement (in Swift is een assignment eigenlijk een expressie die tot een soort NULL waarde evalueert, maar dat moet je zo niet implementeren).
-- [ ] conditions
-    - [ ] if-else 
+- [ ] blocks
+    - [x] if-else 
     - [ ] while loops (while-statement)
 - [x] print als ingebouwde functie
 - [x] expressions als statements
@@ -46,4 +48,7 @@ Deze features zijn optioneel. Je kan er ook uit selecteren; je hoeft ze niet all
 - [ ] enumerations
 - [ ] function overloading
 
+## Extra
+Sommige waren heel snel gemaakt en als 'bonus' erbij gedaan. 
 
+- [x] do scope. Eens ge een scope hebt voor functies/conditions, is het eenvoudig een nieuwe te maken voor dit

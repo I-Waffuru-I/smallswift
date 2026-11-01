@@ -1,15 +1,18 @@
 #pragma once
 #include "libcomp/typecheck.h"
-#include <utility>
+#include "libcomp/interp.h"
+
 namespace libcomp {
 
 using namespace typecheck;
+using namespace interp;
 
 
 struct Stm_ {
   virtual ~Stm_() {};
   virtual void debug(size_t depth) = 0;
   virtual void check(Scope &s) = 0;
+  virtual void interp(Context &c) = 0;
 };
 struct Exp_ {
   virtual ~Exp_() {}
@@ -22,17 +25,20 @@ typedef Exp_ *Exp;
 
 
 
-struct StmList : public Stm_ {
+class StmList : public Stm_ {
+public:
   std::vector<Stm> stms;
   void add(Stm s) { stms.push_back(s); }
   void debug(size_t depth) override;
   void check(Scope &s) override;
+  void interp(Context &c) override;
 };
 struct ExpStm : public Stm_ {
   Exp exp;
   ExpStm(Exp e): exp(e){};
   void debug(size_t depth) override;
   void check(Scope &s) override;
+  void interp(Context &c) override;
 };
 struct BlockStm: public Stm_ {
    StmList* stms;
@@ -41,6 +47,7 @@ struct BlockStm: public Stm_ {
    BlockStm(StmList*s, Type r): stms(s), rtype(r){};
    void debug(size_t depth) override;
    void check(Scope &s) override;
+   void interp(Context &c) override;
 };
 
 struct DoBlockStm: public Stm_ {
@@ -48,6 +55,7 @@ struct DoBlockStm: public Stm_ {
    DoBlockStm(Stm s): block(s){ };
    void debug(size_t depth) override;
    void check(Scope &s) override;
+   void interp(Context &c) override;
 };
 struct IfStm : public Stm_ {
    Exp cond;
@@ -56,6 +64,7 @@ struct IfStm : public Stm_ {
    IfStm(Exp c, Stm s, Stm e = nullptr): cond(c), then(s), els(e) {};
    void debug(size_t depth) override;
    void check(Scope &s) override;
+  void interp(Context &c) override;
 };
 
 
@@ -68,6 +77,7 @@ struct FunDeclare: public Stm_ {
 	FunDeclare(str name, std::vector<Type> params, Type ret): name(name), params(params), rtype(ret) {} 
 	void debug(size_t depth) override;
 	void check(Scope &s) override;
+  void interp(Context &c) override;
 };
 struct FunCall: public Exp_ {
 
@@ -92,6 +102,7 @@ struct DeclareStm : public Stm_ {
    };
 	void debug(size_t depth) override;
 	void check(Scope &s) override;
+   void interp(Context &c) override;
 };
 struct AssignStm : public Stm_ {
 	str id;
@@ -99,6 +110,7 @@ struct AssignStm : public Stm_ {
 	AssignStm(str id, Exp v): id(id), val(v) {};
 	void debug(size_t depth) override;
 	void check(Scope &s) override;
+   void interp(Context &c) override;
 };
 struct VariableExp : public Exp_ {
 	str id;
