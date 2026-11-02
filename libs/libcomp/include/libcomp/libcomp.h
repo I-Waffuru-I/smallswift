@@ -18,6 +18,7 @@ struct Exp_ {
   virtual ~Exp_() {}
   virtual void debug(size_t depth) = 0;
   virtual Type check(Scope &s) = 0;
+  virtual Value interp(Context &c) = 0;
 };
 
 typedef Stm_ *Stm;
@@ -117,6 +118,7 @@ struct VariableExp : public Exp_ {
 	VariableExp(str id): id(id) {};
 	void debug(size_t depth) override;
 	Type check(Scope &s) override;
+   Value interp(Context &c) override;
 };
 
 
@@ -133,6 +135,7 @@ struct BoolExp : public Exp_ {
   BoolExp(Exp left, BoolExpType type, Exp right);
   void debug(size_t depth) override;
   Type check(Scope &s) override;
+   Value interp(Context &c) override;
 };
 struct OpExp : public Exp_ {
   Exp l;
@@ -141,6 +144,7 @@ struct OpExp : public Exp_ {
   OpExp(Exp l, OpType op, Exp r);
   void debug(size_t depth) override;
   Type check(Scope &s) override;
+   Value interp(Context &c) override;
 };
 
 struct ParenExp : public Exp_ {
@@ -148,6 +152,7 @@ struct ParenExp : public Exp_ {
   ParenExp(Exp expr);
   void debug(size_t depth) override;
   Type check(Scope &s) override;
+   Value interp(Context &c) override;
 };
 
 
@@ -157,12 +162,14 @@ struct NumExp : public Exp_ {
 
   void debug(size_t depth) override;
   Type check(Scope &s) override;
+   Value interp(Context &c) override;
 };
 struct TFExp : public Exp_ {
   bool val;
   TFExp(bool value);
   void debug(size_t depth) override;
   Type check(Scope &s) override;
+   Value interp(Context &c) override;
 };
 
 

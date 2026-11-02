@@ -6,7 +6,6 @@ using namespace interp;
 
 // true/false volgens of symbol al bestaat
 void Context::declare(str id, Value val){
-
 	values_[id] = val;
 };
 
@@ -21,22 +20,23 @@ Context* Context::findContext(str id){
 void Context::assign(str id, Value val) {
 	Context* c = findContext(id);
 	if (!c) {
-		error("Identifier ["+id+"] is not found in any scope at runtime");
+		error("Identifier ["+id+"] is not found in any scope during assignment");
 	}
 	c->values_[id] = val;
 }
 
-const Value* Context::lookup(str &name){
-    for (const Context* s = this; s; s = s->parent_) {
+Value Context::lookup(str &name){
+    for (Context* s = this; s; s = s->parent_) {
 		auto it = s->values_.find(name);
         if (it != s->values_.end())
-			return &it->second;
+			return it->second;
     }
-    return nullptr;
-
+	error("Identifier ["+name+"] is not found in any scope");
+	// already exited, ignore warning
+	Value v; return v;
 };
 
 void Context::error(str out){
-   std::cerr << out << std::endl;
+   std::cerr << "Runtime error: " << out << std::endl;
    exit(1);
 };

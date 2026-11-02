@@ -16,6 +16,7 @@ struct Value {
 	// als dit ooit bad_variant_access throwed, is er een typecheck fout
 	int asInt() { return std::get<int>(val);}
 	bool asBool() { return std::get<bool>(val);}
+
 };
 
 
@@ -33,7 +34,7 @@ public:
    // true/false volgens of symbol al bestaat
    void declare(str id, Value val);
    void assign(str id, Value val);
-   const Value* lookup(str &name);
+   Value lookup(str &name);
    void error(str out);
 };
 

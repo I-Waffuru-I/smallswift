@@ -29,14 +29,17 @@ void StmList::check(Scope &s) {
    }
 };
 void StmList::interp(Context &c) {
-} ;
+   for (Stm st : stms) {
+      st->interp(c);
+   }
+};
 
 void ExpStm::debug(size_t depth) {
    indent(depth);
    exp->debug(depth);
 };
 void ExpStm::check(Scope &s) { exp->check(s); };
-void ExpStm::interp(Context &c) { }
+void ExpStm::interp(Context &c) { exp->interp(c); }
 
 
 
@@ -54,14 +57,19 @@ void BlockStm::check(Scope &s) {
    Scope inner(s);
    stms->check(inner);
 };
-void BlockStm::interp(Context &c) { }
+void BlockStm::interp(Context &c) {
+   Context newc (c);
+   stms->interp(newc);
+}
 
 void DoBlockStm::debug(size_t depth) {
    std::cout << "do ";
    block->debug(depth);
 };
 void DoBlockStm::check(Scope &s) { block->check(s); };
-void DoBlockStm::interp(Context &c) { }
+void DoBlockStm::interp(Context &c) {
+   block->interp(c);
+}
 
 void IfStm::debug(size_t depth) {
    std::cout << "if ";
@@ -82,7 +90,14 @@ void IfStm::check(Scope &s) {
    if (els)
       els->check(s);
 };
-void IfStm::interp(Context &c) { }
+void IfStm::interp(Context &c) {
+   bool co = cond->interp(c).asBool();
+   if(co) {
+      then->interp(c);
+   } else if (els){
+      els->interp(c);
+   }
+}
 
 
 
@@ -92,7 +107,7 @@ void IfStm::interp(Context &c) { }
 
 void FunDeclare::debug(size_t depth) { }
 void FunDeclare::check(Scope &s) { }
-void FunDeclare::interp(Context &c) { }
+void FunDeclare::interp(Context &c) {}
 void FunCall::debug(size_t depth) {
 
 };
@@ -123,7 +138,9 @@ void DeclareStm::check(Scope &s) {
    Symbol sym = {t, mut};
    s.declare(id, sym);
 };
-void DeclareStm::interp(Context &c) { }
+void DeclareStm::interp(Context &c) {
+   c.declare(id, val->interp(c));
+}
 
 void AssignStm::debug(size_t depth) {
    std::cout << id << " = ";
@@ -140,9 +157,11 @@ void AssignStm::check(Scope &s) {
       s.error(std::format("Tried to set [{}], can't assign [{}] to a [{}]",id, sy->type.toString(),t.toString() ));
    }
 };
-void AssignStm::interp(Context &c) { }
+void AssignStm::interp(Context &c) {
+   c.assign(id, val->interp(c));
+}
 
-void VariableExp::debug(size_t depth) { std::cout << id; };
+void VariableExp::debug(size_t _) { std::cout << id; };
 Type VariableExp::check(Scope &s) {
    const Symbol *sy = s.lookup(id);
    if (!sy) {
@@ -150,6 +169,9 @@ Type VariableExp::check(Scope &s) {
    }
    return sy->type;
 };
+Value VariableExp::interp(Context &c) {
+   return c.lookup(id);
+}
 
 /*
  * operations
@@ -182,12 +204,22 @@ Type OpExp::check(Scope &s) {
    Type rt = r->check(s);
 
    if (lt != rt) {
-      s.error(std::format("Can't apply operation [{}] to types [{}] and [{}]", debugOpExp(op), lt.toString(), rt.toString()));
+      s.error(std::format("Can't apply operation [{}] to different types [{}] and [{}]", debugOpExp(op), lt.toString(), rt.toString()));
    } else if (lt.kind != typecheck::Type::Kind::Int) {
       s.error(std::format("Can't apply operation [{}] to types [{}] and [{}]", debugOpExp(op), lt.toString(), rt.toString()));
    }
    return lt;
 };
+Value OpExp::interp(Context &c) {
+   int vl = l->interp(c).asInt();
+   int vr = r->interp(c).asInt();
+   switch (op) {
+      case Plus: { return Value::Int(vl+vr); }
+      case Minus: { return Value::Int(vl-vr); }
+      case Multiply: { return Value::Int(vl*vr); }
+      case Divide: { return Value::Int(vl/vr); }
+   }
+}
 
 const char *debugBoolExpType(BoolExpType t) {
    switch (t) {
@@ -239,6 +271,20 @@ Type BoolExp::check(Scope &s) {
    }
    return Type::Bool();
 };
+Value BoolExp::interp(Context &c) {
+   Value vl = l->interp(c);
+   Value vr = r->interp(c);
+   switch (t) {
+      case Eq: { return Value::Bool(vl.asInt() < vr.asInt()); }
+      case Neq: { return Value::Bool(vl.asInt() != vr.asInt()); }
+      case Le: { return Value::Bool(vl.asInt() <= vr.asInt()); }
+      case Lt: { return Value::Bool(vl.asInt() < vr.asInt()); }
+      case Ge: { return Value::Bool(vl.asInt() >= vr.asInt()); }
+      case Gt: { return Value::Bool(vl.asInt() > vr.asInt()); }
+      case And: { return Value::Bool(vl.asBool() && vr.asBool()); }
+      case Or: { return Value::Bool(vl.asBool() || vr.asBool()); }
+   }
+}
 
 ParenExp::ParenExp(Exp expr) : exp(expr) {};
 void ParenExp::debug(size_t depth) {
@@ -247,16 +293,18 @@ void ParenExp::debug(size_t depth) {
    std::cout << ')';
 }
 Type ParenExp::check(Scope &s) { return exp->check(s); }
+Value ParenExp::interp(Context &c) { return exp->interp(c); }
 
 /*
  * Literals
  */
 NumExp::NumExp(int n) : num(n) {};
-void NumExp::debug(size_t depth) { std::cout << num; }
+void NumExp::debug(size_t _) { std::cout << num; }
 Type NumExp::check(Scope &_) { return Type::Int(); }
+Value NumExp::interp(Context &_) { return Value::Int(num); }
 
 TFExp::TFExp(bool val) : val(val) {};
-void TFExp::debug(size_t depth) {
+void TFExp::debug(size_t _) {
    if (val) {
       std::cout << "true";
    } else {
@@ -264,5 +312,6 @@ void TFExp::debug(size_t depth) {
    }
 };
 Type TFExp::check(Scope &_) { return Type::Bool(); };
+Value TFExp::interp(Context &_) { return Value::Bool(val); }
 
 } // namespace libcomp

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include "libcomp/libcomp.h"
 #include "liblexer/lexer.h"
 #include "parser.tab.hh"
 #include "libcomp/parsevals.h"
@@ -35,6 +36,9 @@ int main(int argc, char** argv) {
    typecheck::registerStdFuncs(globalscope);
    typecheck::Scope program = typecheck::Scope(globalscope);
    result->check(program);
+
+   interp::Context c;
+   result->interp(c);
 
    return 0;
 }
