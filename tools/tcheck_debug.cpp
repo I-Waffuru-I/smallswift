@@ -31,9 +31,7 @@ int main(int argc, char** argv) {
    result->debug(0);
    std::cout << std::endl << std::endl;
 
-   typecheck::Scope globalscope;
-   typecheck::registerStdFuncs(globalscope);
-   typecheck::Scope program = typecheck::Scope(globalscope);
+   typecheck::Scope program;
    result->check(program);
 
    return 0;

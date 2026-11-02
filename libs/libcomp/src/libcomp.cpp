@@ -82,7 +82,7 @@ void IfStm::debug(size_t depth) {
 };
 void IfStm::check(Scope &s) {
    Type c = cond->check(s);
-   if (c.kind != typecheck::Type::Kind::Bool) {
+   if (c.kind != typecheck::Kind::Bool) {
       s.error(std::format("Expected bool type in condition, not [{}]",c.toString()));
       exit(1);
    }
@@ -105,16 +105,22 @@ void IfStm::interp(Context &c) {
  * functions
  */
 
-void FunDeclare::debug(size_t depth) { }
+void FunDeclare::debug(size_t depth) {
+	std::cout << name << "(" << std::endl;
+	for (NameType t: params) {
+			std::cout << t.toString();
+	}
+}
 void FunDeclare::check(Scope &s) { }
 void FunDeclare::interp(Context &c) {}
 void FunCall::debug(size_t depth) {
 
 };
 Type FunCall::check(Scope &_) {
-   std::vector<Type> params;
+   std::vector<typecheck::NameType> params;
    return Type::Func(params, Type::Bool());
 };
+Value FunCall::interp(Context &c) {}
 
 
 /*
@@ -205,7 +211,7 @@ Type OpExp::check(Scope &s) {
 
    if (lt != rt) {
       s.error(std::format("Can't apply operation [{}] to different types [{}] and [{}]", debugOpExp(op), lt.toString(), rt.toString()));
-   } else if (lt.kind != typecheck::Type::Kind::Int) {
+   } else if (lt.kind != typecheck::Kind::Int) {
       s.error(std::format("Can't apply operation [{}] to types [{}] and [{}]", debugOpExp(op), lt.toString(), rt.toString()));
    }
    return lt;
@@ -264,7 +270,7 @@ Type BoolExp::check(Scope &s) {
    if (lt != rt) {
       std::cerr << "Mismatched types" << std::endl;
       exit(1);
-   } else if (lt.kind == typecheck::Type::Kind::Bool && t != And && t != Or) {
+   } else if (lt.kind == typecheck::Kind::Bool && t != And && t != Or) {
       s.error(
          std::format("Can't apply operation [{}] to types [{}] and [{}]",
               debugBoolExpType(t), lt.toString(), rt.toString()));

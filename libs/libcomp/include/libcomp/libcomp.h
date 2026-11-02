@@ -8,17 +8,18 @@ using namespace typecheck;
 using namespace interp;
 
 
+
 struct Stm_ {
-  virtual ~Stm_() {};
-  virtual void debug(size_t depth) = 0;
-  virtual void check(Scope &s) = 0;
-  virtual void interp(Context &c) = 0;
+	virtual ~Stm_() {};
+	virtual void debug(size_t depth) = 0;
+	virtual void check(Scope &s) = 0;
+	virtual void interp(Context &c) = 0;
 };
 struct Exp_ {
-  virtual ~Exp_() {}
-  virtual void debug(size_t depth) = 0;
-  virtual Type check(Scope &s) = 0;
-  virtual Value interp(Context &c) = 0;
+	virtual ~Exp_() {}
+	virtual void debug(size_t depth) = 0;
+	virtual Type check(Scope &s) = 0;
+	virtual Value interp(Context &c) = 0;
 };
 
 typedef Stm_ *Stm;
@@ -28,44 +29,44 @@ typedef Exp_ *Exp;
 
 class StmList : public Stm_ {
 public:
-  std::vector<Stm> stms;
-  void add(Stm s) { stms.push_back(s); }
-  void debug(size_t depth) override;
-  void check(Scope &s) override;
-  void interp(Context &c) override;
+	std::vector<Stm> stms;
+	void add(Stm s) { stms.push_back(s); }
+	void debug(size_t depth) override;
+	void check(Scope &s) override;
+	void interp(Context &c) override;
 };
 struct ExpStm : public Stm_ {
-  Exp exp;
-  ExpStm(Exp e): exp(e){};
-  void debug(size_t depth) override;
-  void check(Scope &s) override;
-  void interp(Context &c) override;
+	Exp exp;
+	ExpStm(Exp e): exp(e){};
+	void debug(size_t depth) override;
+	void check(Scope &s) override;
+	void interp(Context &c) override;
 };
 struct BlockStm: public Stm_ {
-   StmList* stms;
-   Type rtype;
-   BlockStm(StmList* s): stms(s){ rtype = Type::Void(); };
-   BlockStm(StmList*s, Type r): stms(s), rtype(r){};
-   void debug(size_t depth) override;
-   void check(Scope &s) override;
-   void interp(Context &c) override;
+	StmList* stms;
+	Type rtype;
+	BlockStm(StmList* s): stms(s){ rtype = Type::Void(); };
+	BlockStm(StmList*s, Type r): stms(s), rtype(r){};
+	void debug(size_t depth) override;
+	void check(Scope &s) override;
+	void interp(Context &c) override;
 };
 
 struct DoBlockStm: public Stm_ {
-   Stm block;
-   DoBlockStm(Stm s): block(s){ };
-   void debug(size_t depth) override;
-   void check(Scope &s) override;
-   void interp(Context &c) override;
+	Stm block;
+	DoBlockStm(Stm s): block(s){ };
+	void debug(size_t depth) override;
+	void check(Scope &s) override;
+	void interp(Context &c) override;
 };
 struct IfStm : public Stm_ {
-   Exp cond;
-   Stm then;
-   Stm els;
-   IfStm(Exp c, Stm s, Stm e = nullptr): cond(c), then(s), els(e) {};
-   void debug(size_t depth) override;
-   void check(Scope &s) override;
-  void interp(Context &c) override;
+	Exp cond;
+	Stm then;
+	Stm els;
+	IfStm(Exp c, Stm s, Stm e = nullptr): cond(c), then(s), els(e) {};
+	void debug(size_t depth) override;
+	void check(Scope &s) override;
+	void interp(Context &c) override;
 };
 
 
@@ -73,17 +74,26 @@ struct IfStm : public Stm_ {
 
 struct FunDeclare: public Stm_ {
 	str name;
-	std::vector<Type> params;
+	std::vector<NameType> params;
+	Stm block;
 	Type rtype;
-	FunDeclare(str name, std::vector<Type> params, Type ret): name(name), params(params), rtype(ret) {} 
+
+	FunDeclare(str name, std::vector<NameType> params, Stm b, Type ret):
+		name(name), params(params), block(b), rtype(ret) {} 
+
 	void debug(size_t depth) override;
 	void check(Scope &s) override;
-  void interp(Context &c) override;
+	void interp(Context &c) override;
 };
 struct FunCall: public Exp_ {
+	str name;
+	std::vector<Exp> params;
 
-  void debug(size_t depth) override;
-  Type check(Scope &s) override;
+	FunCall(str name, std::vector<Exp> params): name(name), params(params) {} 
+
+	void debug(size_t depth) override;
+	Type check(Scope &s) override;
+	Value interp(Context &c) override;
 };
 
 
@@ -95,15 +105,15 @@ struct DeclareStm : public Stm_ {
 	str id;
 	Exp val;
 	bool mut;
-   Type exptype;
+	Type exptype;
 	DeclareStm(str id, Exp v, bool m, Type* etype = nullptr): id(id), val(v), mut(m) { 
-      if (etype) {
-         exptype = *etype;
-      } else exptype = Type::Void();
-   };
+		if (etype) {
+			exptype = *etype;
+		} else exptype = Type::Void();
+	};
 	void debug(size_t depth) override;
 	void check(Scope &s) override;
-   void interp(Context &c) override;
+	void interp(Context &c) override;
 };
 struct AssignStm : public Stm_ {
 	str id;
@@ -111,14 +121,14 @@ struct AssignStm : public Stm_ {
 	AssignStm(str id, Exp v): id(id), val(v) {};
 	void debug(size_t depth) override;
 	void check(Scope &s) override;
-   void interp(Context &c) override;
+	void interp(Context &c) override;
 };
 struct VariableExp : public Exp_ {
 	str id;
 	VariableExp(str id): id(id) {};
 	void debug(size_t depth) override;
 	Type check(Scope &s) override;
-   Value interp(Context &c) override;
+	Value interp(Context &c) override;
 };
 
 
@@ -130,46 +140,46 @@ struct VariableExp : public Exp_ {
 enum OpType { Plus, Minus, Multiply, Divide };
 enum BoolExpType { And, Or, Eq, Neq, Lt, Gt, Le, Ge };
 struct BoolExp : public Exp_ {
-  Exp l, r;
-  BoolExpType t;
-  BoolExp(Exp left, BoolExpType type, Exp right);
-  void debug(size_t depth) override;
-  Type check(Scope &s) override;
-   Value interp(Context &c) override;
+	Exp l, r;
+	BoolExpType t;
+	BoolExp(Exp left, BoolExpType type, Exp right);
+	void debug(size_t depth) override;
+	Type check(Scope &s) override;
+	Value interp(Context &c) override;
 };
 struct OpExp : public Exp_ {
-  Exp l;
-  OpType op;
-  Exp r;
-  OpExp(Exp l, OpType op, Exp r);
-  void debug(size_t depth) override;
-  Type check(Scope &s) override;
-   Value interp(Context &c) override;
+	Exp l;
+	OpType op;
+	Exp r;
+	OpExp(Exp l, OpType op, Exp r);
+	void debug(size_t depth) override;
+	Type check(Scope &s) override;
+	Value interp(Context &c) override;
 };
 
 struct ParenExp : public Exp_ {
-  Exp exp;
-  ParenExp(Exp expr);
-  void debug(size_t depth) override;
-  Type check(Scope &s) override;
-   Value interp(Context &c) override;
+	Exp exp;
+	ParenExp(Exp expr);
+	void debug(size_t depth) override;
+	Type check(Scope &s) override;
+	Value interp(Context &c) override;
 };
 
 
 struct NumExp : public Exp_ {
-  int num;
-  NumExp(int n);
+	int num;
+	NumExp(int n);
 
-  void debug(size_t depth) override;
-  Type check(Scope &s) override;
-   Value interp(Context &c) override;
+	void debug(size_t depth) override;
+	Type check(Scope &s) override;
+	Value interp(Context &c) override;
 };
 struct TFExp : public Exp_ {
-  bool val;
-  TFExp(bool value);
-  void debug(size_t depth) override;
-  Type check(Scope &s) override;
-   Value interp(Context &c) override;
+	bool val;
+	TFExp(bool value);
+	void debug(size_t depth) override;
+	Type check(Scope &s) override;
+	Value interp(Context &c) override;
 };
 
 

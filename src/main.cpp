@@ -32,13 +32,12 @@ int main(int argc, char** argv) {
    result->debug(0);
    std::cout << std::endl << std::endl;
 
-   typecheck::Scope globalscope;
-   typecheck::registerStdFuncs(globalscope);
-   typecheck::Scope program = typecheck::Scope(globalscope);
+   typecheck::Scope program;
    result->check(program);
 
    interp::Context c;
    result->interp(c);
+
    typecheck::str b = "b";
    std::cout << c.lookup(b).asInt() << std::endl;
 

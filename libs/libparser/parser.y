@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <string>
 #include "libcomp/libcomp.h"
+#include "libcomp/util.h"
 #include "libcomp/typecheck.h"
 #include "liblexer/lexer.h"
 
@@ -23,6 +24,7 @@ void yyerror(const char *s);
 
 %code {
     using namespace libcomp;
+    using namespace util;
     using namespace typecheck;
 }
 
@@ -33,6 +35,8 @@ void yyerror(const char *s);
     libcomp::StmList* stml;
     libcomp::Stm stm;
     typecheck::Type* typ;
+    util::NameType* ntype;
+    std::vector<util::NameType>* params;
 }
 
 /* zou nice zijn om da gwn te importen van tokens.h ma idk of da gaat */
@@ -85,6 +89,11 @@ void yyerror(const char *s);
 %type <ival> INTEGER
 %type <sval> IDENTIFIER
 %type <typ> littype
+
+%type <ntype>  param
+%type <params> params paramlist
+%type <stm>    fundef
+
 %type <exp> boollit valexpr valueexpr
 %type <exp> boolexpr 
 %type <stml> program stmts
@@ -122,11 +131,35 @@ line:
     | assignstm endline 
     | DO block endline { $$ = new DoBlockStm($2); }
     | ifstm endline 
+		| fundef endline
     ;
 endline:
     NEWLINE 
     | SEMICOLON
     ;
+
+
+
+fundef:
+    FUNC IDENTIFIER LPAREN params RPAREN block
+        { $$ = new FunDeclare($2, *$4, $6, Type::Void()); free($2); delete $4; }
+    | FUNC IDENTIFIER LPAREN params RPAREN ARROW littype block
+        { $$ = new FunDeclare($2, *$4, $8, *$7); free($2); delete $4; delete $7; }
+    ;
+params:
+    /* geen parameters */   { $$ = new std::vector<NameType>(); }
+    | paramlist
+    ;
+paramlist:
+    param                   { $$ = new std::vector<NameType>(); $$->push_back(*$1); delete $1; }
+    | paramlist COMMA param { $1->push_back(*$3); delete $3; $$ = $1; }
+    ;
+param:
+    IDENTIFIER COLON littype { $$ = new NameType($1, $3->kind); free($1); delete $3; }
+    ;
+
+
+
 
 ifstm: 
     IF valueexpr block { $$ = new IfStm($2, $3); } 
@@ -136,13 +169,14 @@ ifstm:
 
 declarestm:
     LET IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, false); free($2); }
-    | LET IDENTIFIER COLON littype ASSIGN valueexpr { $$ = new DeclareStm($2, $6, false, $4); free($2); free($4); }
+    | LET IDENTIFIER COLON littype ASSIGN valueexpr { $$ = new DeclareStm($2, $6, false, $4); free($2); delete $4; }
     | VAR IDENTIFIER ASSIGN valueexpr { $$ = new DeclareStm($2, $4, true); free($2); }
-    | VAR IDENTIFIER COLON littype ASSIGN valueexpr { $$ = new DeclareStm($2, $6, true, $4); free($2); free($4); }
+    | VAR IDENTIFIER COLON littype ASSIGN valueexpr { $$ = new DeclareStm($2, $6, true, $4); free($2); delete $4; }
     ;
 littype:
     INTTYPE {$$ = new Type(Type::Int()); }
     | BOOLTYPE {$$ = new Type(Type::Bool()); }
+		
     ;
 
 assignstm:
