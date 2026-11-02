@@ -39,6 +39,8 @@ int main(int argc, char** argv) {
 
    interp::Context c;
    result->interp(c);
+   typecheck::str b = "b";
+   std::cout << c.lookup(b).asInt() << std::endl;
 
    return 0;
 }
