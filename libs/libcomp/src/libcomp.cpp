@@ -6,6 +6,7 @@
 #include <format>
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 #include <variant>
 #include <vector>
 namespace libcomp {
@@ -58,8 +59,8 @@ void BlockStm::check(Scope &s) {
   stms->check(inner);
 };
 void BlockStm::interp(Context &c) {
-  Context newc(c);
-  stms->interp(newc);
+  std::shared_ptr<Context> newc = std::make_shared<Context>(c);
+  stms->interp(*newc);
 }
 
 void DoBlockStm::debug(size_t depth) {
@@ -96,70 +97,6 @@ void IfStm::interp(Context &c) {
   } else if (els) {
     els->interp(c);
   }
-}
-
-/*
- * functions
- */
-
-void FunDeclare::debug(size_t depth) {
-  std::cout << name << "(" << std::endl;
-  for (NameType t : params) {
-    std::cout << t.toString();
-  }
-  std::cout << name << ")" << std::endl;
-  block->debug(depth);
-}
-void FunDeclare::check(Scope &s) {
-  Type ftype = Type::Func(params, rtype);
-  s.declare(name, {ftype, false});
-}
-void FunDeclare::interp(Context &c) {
-  c.declare(name,
-            Value::Fn(std::make_shared<Closure>(this, c.shared_from_this())));
-}
-void FunCall::debug(size_t depth) {
-
-};
-Type FunCall::check(Scope &s) {
-  const Symbol *fn = s.lookup(name);
-  if (params.size() != fn->type.params.size())
-    s.error(
-        std::format("Function '{}' param count doesn't match signature", name));
-
-  for (size_t i = 0; i < params.size(); i++) {
-    Type t = params[i]->check(s);
-    NameType p = fn->type.params[i];
-    if (t.kind != p.kind)
-      s.error(std::format(
-          "Param '{}' of function '{}' types don't match: '{}' and '{}'",
-          p.name, name, p.toString(), t.toString()));
-  }
-  return Type::Void();
-};
-Value FunCall::interp(Context &c) {}
-
-void PrintStm::debug(size_t depth) {
-  std::cout << "print (";
-  exp->debug(depth);
-  std::cout << ")";
-};
-
-void ReturnStm::debug(size_t depth) {
-  std::cout << "return";
-  exp->debug(depth);
-}
-void ReturnStm::check(Scope &s) {}
-void ReturnStm::interp(Context &c) {}
-
-void PrintStm::check(Scope &s) { exp->check(s); };
-void PrintStm::interp(Context &c) {
-  std::visit(overloaded{[](std::monostate) { std::cout << "()"; },
-                        [](int i) { std::cout << i; },
-                        [](bool b) { std::cout << (b ? "true" : "false"); },
-                        [](const auto &) { std::cout << "<function>"; }},
-             exp->interp(c).val);
-  std::cout << std::endl;
 }
 
 /*
@@ -211,7 +148,7 @@ Type VariableExp::check(Scope &s) {
   }
   return sy->type;
 };
-Value VariableExp::interp(Context &c) { return c.lookup(id); }
+Value VariableExp::interp(Context &c) { return *c.lookup(id); }
 
 /*
  * operations
@@ -270,6 +207,7 @@ Value OpExp::interp(Context &c) {
     return Value::Int(vl / vr);
   }
   }
+  return Value::Void();
 }
 
 const char *debugBoolExpType(BoolExpType t) {
@@ -350,6 +288,7 @@ Value BoolExp::interp(Context &c) {
     return Value::Bool(vl.asBool() || vr.asBool());
   }
   }
+  return Value::Void();
 }
 
 ParenExp::ParenExp(Exp expr) : exp(expr) {};

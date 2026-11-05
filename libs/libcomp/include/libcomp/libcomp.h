@@ -1,8 +1,10 @@
 #pragma once
 #include "libcomp/interp.h"
 #include "libcomp/typecheck.h"
+#include "libcomp/util.h"
 #include <functional>
 #include <memory>
+#include <unordered_map>
 
 namespace libcomp {
 
@@ -13,7 +15,6 @@ struct Stm_ {
   virtual ~Stm_() {};
   virtual void debug(size_t depth) = 0;
   virtual void check(Scope &s) = 0;
-  virtual void interpfuncs(Context &c) = 0;
   virtual void interp(Context &c) = 0;
 };
 struct Exp_ {
@@ -44,8 +45,7 @@ struct ExpStm : public Stm_ {
 struct BlockStm : public Stm_ {
   StmList *stms;
   Type rtype;
-  BlockStm(StmList *s) : stms(s) { rtype = Type::Void(); };
-  BlockStm(StmList *s, Type r) : stms(s), rtype(r) {};
+  BlockStm(StmList *s, Type r = Type::Void()) : stms(s), rtype(r) {};
   void debug(size_t depth) override;
   void check(Scope &s) override;
   void interp(Context &c) override;
@@ -81,11 +81,20 @@ struct FunDeclare : public Stm_ {
   void check(Scope &s) override;
   void interp(Context &c) override;
 };
+struct FnCallParam {
+  str name;
+  Exp val;
+
+  FnCallParam(str n, Exp v) : name(n), val(v) {};
+  // str toString() const;
+  // bool operator==(const NameType& p) const;
+};
 struct FunCall : public Exp_ {
   str name;
-  std::vector<Exp> params;
+  std::vector<FnCallParam> params;
 
-  FunCall(str name, std::vector<Exp> params) : name(name), params(params) {}
+  FunCall(str name, std::vector<FnCallParam> params)
+      : name(name), params(params) {}
 
   void debug(size_t depth) override;
   Type check(Scope &s) override;
@@ -110,27 +119,25 @@ struct PrintStm : public Stm_ {
 };
 
 struct NativeFn : Callable {
-  std::function<Value(std::vector<Value> &, Context &)> fn;
+  std::function<Value(std::unordered_map<str, Value> &, Context &)> fn;
 
-  NativeFn(std::function<Value(std::vector<Value> &, Context &)> f)
+  NativeFn(std::function<Value(std::unordered_map<str, Value> &, Context &)> f)
       : fn(std::move(f)) {}
 
-  Value call(std::vector<Value> &args, Context &c) override {
+  Value call(std::unordered_map<str, Value> &args, Context &c) override {
     return fn(args, c);
   }
 };
-struct Closure : Callable{
-   FunDeclare *decl;
-	std::shared_ptr<Context> env;
+struct Closure : Callable {
+  FunDeclare *decl;
+  // context bij declaration
+  std::shared_ptr<Context> env;
 
-  Closure(FunDeclare* fn, std::shared_ptr<Context> parent) :  decl(fn), env(parent) {}
+  Closure(FunDeclare *fn, std::shared_ptr<Context> parent)
+      : decl(fn), env(parent) {}
 
-  Value call(std::vector<Value> &args, Context &) override {
-    for (size_t i = 0; i < args.size(); i++)
-      env->declare(decl->params[i].name, args[i]);
+  Value call(std::unordered_map<str, Value> &args, Context &c) override;
 
-    return Value::Void();
-  }
 };
 
 struct DeclareStm : public Stm_ {

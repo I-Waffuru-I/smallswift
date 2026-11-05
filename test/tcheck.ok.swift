@@ -13,3 +13,15 @@ var longer1 = 69 * 2
 longer1 = longer1/2
 b = longer1 + 2*a
 true && (false || 90<100+2)
+
+do {
+    var c = 20;
+    b = longer1 + 2*a
+}
+
+func foo(bar: Int){
+    bar = bar + 5
+    b = bar + b * 1000
+}
+
+foo(bar:4)

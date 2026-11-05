@@ -37,6 +37,8 @@ void yyerror(const char *s);
     typecheck::Type* typ;
     util::NameType* ntype;
     std::vector<util::NameType>* params;
+    libcomp::FnCallParam* fnparam;
+    std::vector<libcomp::FnCallParam>* fnparams;
 }
 
 /* zou nice zijn om da gwn te importen van tokens.h ma idk of da gaat */
@@ -93,6 +95,10 @@ void yyerror(const char *s);
 %type <ntype>  param
 %type <params> params paramlist
 %type <stm>    fundef
+
+%type <fnparam> callparam
+%type <fnparams> callparams callparamlist
+%type <exp> funcall
 
 %type <exp> boollit valexpr valueexpr
 %type <exp> boolexpr 
@@ -161,6 +167,25 @@ param:
 
 
 
+funcall:
+    /* FunCall(str name, std::vector<FnCallParam> params) : name(name), params(params) {} */
+    IDENTIFIER LPAREN callparams RPAREN { $$ = new FunCall($1, *$3); free $1; delete $3;}
+    ;
+callparams:
+    /* geen parameters */   { $$ = new std::vector<FnCallParam>(); }
+    | callparamlist
+    ;
+
+callparamlist:
+    callparam                   { $$ = new std::vector<FnCallParam>(); $$->push_back(*$1); delete $1; }
+    | callparamlist COMMA callparam { $1->push_back(*$3); delete $3; $$ = $1; }
+    ;
+callparam:
+    IDENTIFIER COLON valueexpr { $$ = new FnCallParam($1, $3); free($1); }
+    ;
+
+
+
 ifstm: 
     IF valueexpr block { $$ = new IfStm($2, $3); } 
     | IF valueexpr block ELSE block { $$ = new IfStm($2, $3, $5); } 
@@ -189,6 +214,7 @@ valueexpr:
 
 valexpr:
       INTEGER { $$ = new NumExp($1); }
+    | funcall
     | IDENTIFIER { $$ = new VariableExp($1); free($1); }
     | MINUS INTEGER %prec UMINUS { $$ = new NumExp(-$2); }
     | valexpr PLUS valexpr { $$ = new OpExp($1, Plus, $3); }

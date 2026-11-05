@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <string>
 #include "libcomp/libcomp.h"
 #include "liblexer/lexer.h"
@@ -35,11 +36,13 @@ int main(int argc, char** argv) {
    typecheck::Scope program;
    result->check(program);
 
-   // interp::Context c;
-   // result->interp(c);
-   //
-   // typecheck::str b = "b";
-   // std::cout << c.lookup(b).asInt() << std::endl;
+   std::cout << std::endl << "RUNTIME:" << std::endl;
+   std::shared_ptr<interp::Context> root = std::make_shared<interp::Context>();
+   result->interp(*root);
+
+   std::cout << std::endl << "ANALYSIS:" << std::endl;
+   typecheck::str b = "b";
+   std::cout << root->lookup(b)->asInt() << std::endl;
 
    return 0;
 }

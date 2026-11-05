@@ -20,6 +20,7 @@ struct NameType {
 };
 
 
+
 struct Type {
 
    Kind kind;
