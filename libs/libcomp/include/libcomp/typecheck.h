@@ -3,6 +3,8 @@
 #include <string>
 #include <unordered_map>
 #include "libcomp/util.h"
+#include "libcomp/interp.h"
+#include <variant>
 #include <vector>
 // #include "libcomp.h"
 namespace typecheck {
@@ -34,6 +36,7 @@ struct Scope {
    const Symbol *lookup(str &name);
    void error(str out);
 };
+
 
 
 } // namespace typecheck

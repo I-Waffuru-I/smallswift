@@ -19,6 +19,7 @@ struct NameType {
 	bool operator==(const NameType& p) const;
 };
 
+
 struct Type {
 
    Kind kind;
@@ -37,6 +38,16 @@ struct Type {
    bool operator!=(const Type& o) const { return !(*this == o); }
    str toString() const;
 };
+
+
+template<class... Ts>
+struct overloaded : Ts... {
+    using Ts::operator()...;
+};
+
+// C++17 only: deduction guide so the compiler can infer Ts from the constructor arguments
+template<class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
 
 
 }

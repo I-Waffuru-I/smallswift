@@ -41,3 +41,4 @@ str Type::toString() const {
 			s += (i ? ", " : "") + params[i].toString();
 	return s + ") -> " + ret->toString();
 }
+

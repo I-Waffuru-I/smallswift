@@ -131,7 +131,7 @@ line:
     | assignstm endline 
     | DO block endline { $$ = new DoBlockStm($2); }
     | ifstm endline 
-		| fundef endline
+    | fundef endline
     ;
 endline:
     NEWLINE 
@@ -176,7 +176,6 @@ declarestm:
 littype:
     INTTYPE {$$ = new Type(Type::Int()); }
     | BOOLTYPE {$$ = new Type(Type::Bool()); }
-		
     ;
 
 assignstm:
@@ -198,6 +197,7 @@ valexpr:
     | valexpr DIV valexpr { $$ = new OpExp($1, Divide, $3); }
     | LPAREN valexpr RPAREN { $$ = new ParenExp($2); }
     ;
+
 
 boollit:
     TRUE   { $$ = new TFExp(true);  }

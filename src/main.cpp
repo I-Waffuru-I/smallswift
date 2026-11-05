@@ -35,11 +35,11 @@ int main(int argc, char** argv) {
    typecheck::Scope program;
    result->check(program);
 
-   interp::Context c;
-   result->interp(c);
-
-   typecheck::str b = "b";
-   std::cout << c.lookup(b).asInt() << std::endl;
+   // interp::Context c;
+   // result->interp(c);
+   //
+   // typecheck::str b = "b";
+   // std::cout << c.lookup(b).asInt() << std::endl;
 
    return 0;
 }
