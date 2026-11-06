@@ -61,7 +61,6 @@ true { return (TRUE); }
 false { return (FALSE); }
 
 func { return (FUNC); }
-print { return (PRINT); }
 if { return (IF); }
 else { return (ELSE); }
 while { return (WHILE); }

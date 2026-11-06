@@ -34,7 +34,7 @@ Type typeFromKind(NameType nt) {
 
 Value Closure::call(std::unordered_map<str, Value> &args, Context &) {
   std::shared_ptr<Context> local = std::make_shared<Context>(env);
-  local->info(std::format("called fn '{}'", decl->name));
+  // local->info(std::format("called fn '{}'", decl->name));
   for (size_t i = 0; i < args.size(); i++) 
     local->declare(decl->params[i].name, args[decl->params[i].name]);
 
@@ -90,7 +90,7 @@ Type FunCall::check(Scope &s) {
   for (size_t i = 0; i < params.size(); i++) {
     Type t = params[i].val->check(s);
     NameType p = fn->type.params[i];
-    if (t.kind != p.kind)
+    if (t.kind != p.kind && p.kind != Kind::Any)
       s.error(std::format(
           "Param '{}' of function '{}' types don't match: '{}' and '{}'",
           p.name, name, p.toString(), t.toString()));
@@ -104,7 +104,7 @@ Value FunCall::interp(Context &c) {
     vals[p.name] = p.val->interp(c);
 
   Value ret = call.call(vals, c);
-  printval(ret);
+  // printval(ret);
   return ret;
 }
 

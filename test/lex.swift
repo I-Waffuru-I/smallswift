@@ -7,7 +7,7 @@ abc d8f
 : , ->
 ( ) { }
 var let //
-print true false
+true false
 if else while
 func return
 Int Bool

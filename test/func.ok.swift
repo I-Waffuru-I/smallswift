@@ -6,3 +6,6 @@ func foo(bar: Int){
 }
 
 foo(bar:5)
+
+print(b)
+print(c)

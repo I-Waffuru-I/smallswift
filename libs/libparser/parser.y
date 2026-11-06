@@ -182,6 +182,7 @@ callparamlist:
     ;
 callparam:
     IDENTIFIER COLON valueexpr { $$ = new FnCallParam($1, $3); free($1); }
+    | valueexpr { $$ = new FnCallParam("_", $1); }
     ;
 
 

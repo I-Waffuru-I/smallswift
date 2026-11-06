@@ -22,7 +22,6 @@ struct NameType {
 
 
 struct Type {
-
    Kind kind;
    std::vector<NameType> params;
    std::shared_ptr<Type> ret;

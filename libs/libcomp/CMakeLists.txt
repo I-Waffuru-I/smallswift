@@ -5,6 +5,7 @@ add_library(libcomp
 	src/interp.cpp
 	src/util.cpp
 	src/functions.cpp
+	src/cstd.cpp
 )
 
 target_include_directories(libcomp PUBLIC
