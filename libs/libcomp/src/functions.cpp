@@ -1,4 +1,6 @@
 #include "libcomp/libcomp.h"
+#include "libcomp/typecheck.h"
+#include "libcomp/util.h"
 #include <format>
 #include <iostream>
 #include <memory>
@@ -19,6 +21,15 @@ void printval(Value &val) {
                         [](const auto &) { std::cout << "<function>"; }},
              val.val);
   std::cout << std::endl;
+}
+
+Type typeFromKind(NameType nt) {
+  switch (nt.kind) {
+    case Kind::Int:  { return Type::Int(); }
+    case Kind::Bool:{ return Type::Bool();}
+    case Kind::Void:{ return Type::Void();}
+    default :{ return Type::Error();}
+  }
 }
 
 Value Closure::call(std::unordered_map<str, Value> &args, Context &) {
@@ -48,8 +59,13 @@ void FunDeclare::debug(size_t depth) {
   block->debug(depth);
 }
 void FunDeclare::check(Scope &s) {
-  Type ftype = Type::Func(params, rtype);
-  s.declare(name, {ftype, false});
+  s.declare(name, {Type::Func(params, rtype), false});
+  Scope news (s);
+  for (NameType p : params) {
+    Symbol s { typeFromKind(p), false};
+    news.declare(p.name, s);
+  }
+  block->check(news);
 }
 void FunDeclare::interp(Context &c) {
   std::shared_ptr<Closure> closure =

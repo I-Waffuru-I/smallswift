@@ -43,6 +43,8 @@ int main(int argc, char** argv) {
    std::cout << std::endl << "ANALYSIS:" << std::endl;
    typecheck::str b = "b";
    std::cout << root->lookup(b)->asInt() << std::endl;
+   typecheck::str c = "c";
+   std::cout << root->lookup(c)->asInt() << std::endl;
 
    return 0;
 }

@@ -19,9 +19,3 @@ do {
     b = longer1 + 2*a
 }
 
-func foo(bar: Int){
-    bar = bar + 5
-    b = bar + b * 1000
-}
-
-foo(bar:4)
