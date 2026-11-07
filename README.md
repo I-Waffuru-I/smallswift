@@ -19,9 +19,9 @@ Basisniveau. Deze features moet je minstens ondersteunen:
 - [x] Variable en constant definities, met of zonder vermelding van het type. Declaraties zonder initiële waarde hoef je niet te ondersteunen.
     - [x] Met type
     - [x] Zonder type
-- [ ] functions en function calls (call expressions). Ook recursieve calls!
-    - [ ] function definition 
-    - [ ] function call 
+- [x] functions en function calls (call expressions). Ook recursieve calls!
+    - [x] function definition 
+    - [x] function call 
     - [ ] return statement
 - [x] operator expressions: enkel de operators vermeld in de files lexer.c en tokens.h, zie beneden
 - [x] Assignment statement (in Swift is een assignment eigenlijk een expressie die tot een soort NULL waarde evalueert, maar dat moet je zo niet implementeren).
@@ -52,3 +52,4 @@ Deze features zijn optioneel. Je kan er ook uit selecteren; je hoeft ze niet all
 Sommige waren heel snel gemaakt en als 'bonus' erbij gedaan. 
 
 - [x] do scope. Eens ge een scope hebt voor functies/conditions, is het eenvoudig een nieuwe te maken voor dit
+- [x] cstd 'library' die ge kunt inladen door die function te callen. Hier kunnen vanalle types en default functions in zitten, niet enkel print
