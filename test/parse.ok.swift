@@ -16,9 +16,19 @@ do {
     let c = b + 2
 }
 
-
 if (b < a) {
     let c = 2
 } else {
     let c = 10
+}
+
+func display(v:Int) {
+    print(v+1)
+}
+display(v:50)
+display(v:51 * 2)
+
+func add(a:Int, b : Int) -> Int {
+    let addedVal = a + b
+    return addedVal
 }

@@ -80,6 +80,7 @@ void yyerror(const char *s);
 %token BOOLTYPE   293
 %token RETURN     294
 %token DO         295
+%token ULABEL     296
 
 %left PLUS MINUS
 %left MUL DIV
@@ -99,6 +100,7 @@ void yyerror(const char *s);
 %type <fnparam> callparam
 %type <fnparams> callparams callparamlist
 %type <exp> funcall
+%type <stm> returnstm
 
 %type <exp> boollit valexpr valueexpr
 %type <exp> boolexpr 
@@ -138,6 +140,7 @@ line:
     | DO block endline { $$ = new DoBlockStm($2); }
     | ifstm endline 
     | fundef endline
+    | returnstm endline
     ;
 endline:
     NEWLINE 
@@ -161,7 +164,9 @@ paramlist:
     | paramlist COMMA param { $1->push_back(*$3); delete $3; $$ = $1; }
     ;
 param:
-    IDENTIFIER COLON littype { $$ = new NameType($1, $3->kind); free($1); delete $3; }
+    IDENTIFIER COLON littype { $$ = new NameType($1, $1, $3->kind); free($1); delete $3; }
+    | IDENTIFIER IDENTIFIER COLON littype { $$ = new NameType($1, $2, $4->kind); free($1); free($2); delete $4; }
+    | ULABEL IDENTIFIER COLON littype { $$ = new NameType("_", $2, $4->kind); free($2); delete $4; }
     ;
 
 
@@ -206,6 +211,9 @@ littype:
 
 assignstm:
     IDENTIFIER ASSIGN valueexpr { $$ = new AssignStm($1, $3); free($1); }
+    ;
+returnstm:
+    RETURN valueexpr { $$ = new ReturnStm($2); }
     ;
 
 valueexpr:

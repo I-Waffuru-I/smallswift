@@ -24,3 +24,8 @@ void Scope::error(str out) {
   std::cerr << "line [" << dbg.linenr << "]" << out << std::endl;
   exit(1);
 }
+
+void ReturnInfo::startNewFlow() {
+  std::cout << "start new flow" << std::endl;
+  hasReturned = false;
+}

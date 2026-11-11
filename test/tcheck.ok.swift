@@ -19,3 +19,17 @@ do {
     b = longer1 + 2*a
 }
 
+
+func display(v:Int) {
+    print(v+1)
+}
+display(v:50)
+display(v:51 * 2)
+
+func add(a:Int, b:Int) -> Int {
+    let sum = a + b 
+   return sum
+}
+
+let sumval = add(a:50, b:5)
+print(sumval)

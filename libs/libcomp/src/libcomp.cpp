@@ -86,9 +86,18 @@ void IfStm::check(Scope &s) {
         std::format("Expected bool type in condition, not [{}]", c.toString()));
     exit(1);
   }
+  if (s.ret) s.ret->startNewFlow();
   then->check(s);
-  if (els)
+
+  if (els){
+    bool returned = false;
+    if (s.ret) {
+      returned = s.ret->hasReturned;
+      s.ret->startNewFlow();
+    }
     els->check(s);
+    if(!s.ret->hasReturned && returned) s.error("Not all branches return a value");
+  }
 };
 void IfStm::interp(Context &c) {
   bool co = cond->interp(c).asBool();

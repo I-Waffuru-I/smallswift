@@ -33,7 +33,7 @@ void addPrintFn(interp::Context &root) {
   root.declare("print", val);
 }
 void addPrintFn(typecheck::Scope &root) {
-  std::vector<NameType> params{NameType("_", Kind::Any)};
+  std::vector<NameType> params{NameType("val", "_", Kind::Any)};
   libcomp::Symbol s = {Type::Func(params, Type::Void()), false};
   str name = "print";
   root.declare(name, s);

@@ -1,11 +1,29 @@
 var b = 10
 var c = 20
-func foo(bar: Int){
+
+func foo(bar: Int)-> Int{
     b = b + bar * 2
     c = b + 500
+    if (b < c) {
+        return c
+    }
+    return b
 }
 
-foo(bar:5)
+func foo2(bar: Int) {
+    foo(bar:bar);
+    foo(bar:bar*10);
+    func foo3() {
+        print(9999);
+    }
+    foo3()
+    print(bar)
+}
+let f = foo2
+print(foo)
+print(foo(bar:1))
 
-print(b)
-print(c)
+f(bar:5)
+
+
+

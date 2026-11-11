@@ -53,6 +53,7 @@ identifier {letter}({letdig})*
 , { return (COMMA); }
 -\> { return (ARROW); }
 
+_ { return (ULABEL); }
 
 Int { return (INTTYPE); }
 Bool { return (BOOLTYPE); }

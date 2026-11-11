@@ -25,24 +25,32 @@ void printval(Value &val) {
 
 Type typeFromKind(NameType nt) {
   switch (nt.kind) {
-    case Kind::Int:  { return Type::Int(); }
-    case Kind::Bool:{ return Type::Bool();}
-    case Kind::Void:{ return Type::Void();}
-    default :{ return Type::Error();}
+  case Kind::Int: {
+    return Type::Int();
+  }
+  case Kind::Bool: {
+    return Type::Bool();
+  }
+  case Kind::Void: {
+    return Type::Void();
+  }
+  default: {
+    return Type::Error();
+  }
   }
 }
 
 Value Closure::call(std::unordered_map<str, Value> &args, Context &) {
   std::shared_ptr<Context> local = std::make_shared<Context>(env);
   // local->info(std::format("called fn '{}'", decl->name));
-  for (size_t i = 0; i < args.size(); i++) 
+  for (size_t i = 0; i < args.size(); i++)
     local->declare(decl->params[i].name, args[decl->params[i].name]);
 
   decl->block->interp(*local);
 
   if (local->ret && !local->ret->isset)
     local->error(std::format("Function '{}' ended without returning a value",
-                           decl->name));
+                             decl->name));
   return local->ret ? local->ret->val : Value::Void();
 }
 
@@ -55,17 +63,22 @@ void FunDeclare::debug(size_t depth) {
     indent(depth + 1);
     std::cout << t.toString();
   }
-  std::cout << name << ")" << std::endl;
+  std::cout << ")" << std::endl;
   block->debug(depth);
 }
 void FunDeclare::check(Scope &s) {
   s.declare(name, {Type::Func(params, rtype), false});
-  Scope news (s);
+  ReturnInfo ret(rtype, false);
+  Scope news(&s, &ret);
+
   for (NameType p : params) {
-    Symbol s { typeFromKind(p), false};
+    Symbol s{typeFromKind(p), false};
     news.declare(p.name, s);
   }
   block->check(news);
+  if (ret.typeExp != Type::Void() && !ret.hasReturned) {
+    s.error("Not all branches returned a value");
+  }
 }
 void FunDeclare::interp(Context &c) {
   std::shared_ptr<Closure> closure =
@@ -83,6 +96,8 @@ void FunCall::debug(size_t depth) {
 };
 Type FunCall::check(Scope &s) {
   const Symbol *fn = s.lookup(name);
+  if (fn->type.kind != Kind::Func)
+    s.error(std::format("Function '{}' shadowed by non-func variable", name));
   if (params.size() != fn->type.params.size())
     s.error(
         std::format("Function '{}' param count doesn't match signature", name));
@@ -95,7 +110,7 @@ Type FunCall::check(Scope &s) {
           "Param '{}' of function '{}' types don't match: '{}' and '{}'",
           p.name, name, p.toString(), t.toString()));
   }
-  return Type::Void();
+  return *fn->type.ret;
 };
 Value FunCall::interp(Context &c) {
   Callable &call = c.lookup(name)->asFn();
@@ -112,7 +127,15 @@ void ReturnStm::debug(size_t depth) {
   std::cout << "return ";
   exp->debug(depth);
 }
-void ReturnStm::check(Scope &s) {}
+void ReturnStm::check(Scope &s) {
+  if (!s.ret)
+    s.error("Return outside of function scope");
+  Type t = exp->check(s);
+  if (s.ret->typeExp != t)
+    s.error(std::format("Returned type '{}' but function requires '{}'",
+                        t.toString(), s.ret->typeExp.toString()));
+  s.ret->hasReturned = true;
+}
 void ReturnStm::interp(Context &c) {}
 
 void PrintStm::debug(size_t depth) {

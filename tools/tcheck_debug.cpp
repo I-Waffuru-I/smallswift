@@ -1,38 +1,43 @@
-#include <iostream>
-#include <string>
-#include "liblexer/lexer.h"
-#include "parser.tab.hh"
+#include "libcomp/cstd.h"
 #include "libcomp/parsevals.h"
 #include "libcomp/typecheck.h"
+#include "liblexer/lexer.h"
+#include "parser.tab.hh"
+#include <iostream>
+#include <string>
 
-int main(int argc, char** argv) {
-    std::cout << "hey" << std::endl;
+int main(int argc, char **argv) {
+  std::cout << "hey" << std::endl;
 
-    std::string input = "";
+  std::string input = "";
 
-   if (argc < 2) {
-      printf("No file given.\n");
-      return 1;
-   }
+  if (argc < 2) {
+    printf("No file given.\n");
+    return 1;
+  }
 
-   yyin = fopen(argv[1], "r");
-   if (!yyin) {
-      std::cout << "Could not open file:" << argv[1] << std::endl;
-      return 1;
-   }
+  yyin = fopen(argv[1], "r");
+  if (!yyin) {
+    std::cout << "Could not open file:" << argv[1] << std::endl;
+    return 1;
+  }
 
-   int parse_res = yyparse();
-   if (parse_res == 0 && result) {
-      std::cout << std::endl << "parse successful" << std::endl;
-   } else {
-      exit(parse_res);
-   }
+  int parse_res = yyparse();
+  if (parse_res == 0 && result) {
+    std::cout << std::endl << "parse successful" << std::endl;
+  } else {
+    exit(parse_res);
+  }
 
-   result->debug(0);
-   std::cout << std::endl << std::endl;
+  result->debug(0);
+  std::cout << std::endl << std::endl;
 
-   typecheck::Scope program;
-   result->check(program);
+  typecheck::Scope program;
+  cstd::loadStd(program);
+  result->check(program);
 
-   return 0;
+
+  std::cout << "TYPECHECK CORRECT" << std::endl;
+
+  return 0;
 }

@@ -22,7 +22,7 @@ Type Type::Func(std::vector<NameType> params, Type ret) {
     return t;
 }
 str NameType::toString() const {
-	return std::format("{}:{}", name, kindToString(kind));
+	return std::format("{} {}:{}", label, name, kindToString(kind));
 }
 bool NameType::operator==(const NameType& p) const{
 	return name == p.name && kind == p.kind;
