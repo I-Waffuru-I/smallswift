@@ -1,3 +1,4 @@
+#include "libcomp/interp.h"
 #include "libcomp/libcomp.h"
 #include "libcomp/typecheck.h"
 #include "libcomp/util.h"
@@ -10,6 +11,11 @@ using namespace libcomp;
 using namespace interp;
 using namespace typecheck;
 
+static str argKey(const str &label, size_t i) {
+  if (label != "_")
+    return label;
+  return i == 0 ? "_" : "_" + std::to_string(i);
+}
 void indent(size_t depth) {
   for (size_t d = 0; d < depth; d++)
     std::cout << "   ";
@@ -40,11 +46,14 @@ Type typeFromKind(NameType nt) {
   }
 }
 
+
 Value Closure::call(std::unordered_map<str, Value> &args, Context &) {
   std::shared_ptr<Context> local = std::make_shared<Context>(env);
+  if (decl->rtype != Type::Void())
+    local->ret = std::make_shared<ReturnState>();
   // local->info(std::format("called fn '{}'", decl->name));
   for (size_t i = 0; i < args.size(); i++)
-    local->declare(decl->params[i].name, args[decl->params[i].name]);
+    local->declare(decl->params[i].name, args.at(argKey(decl->params[i].label, i)));
 
   decl->block->interp(*local);
 
@@ -69,14 +78,14 @@ void FunDeclare::debug(size_t depth) {
 void FunDeclare::check(Scope &s) {
   s.declare(name, {Type::Func(params, rtype), false});
   ReturnInfo ret(rtype, false);
-  Scope news(&s, &ret);
+  Scope local(&s, &ret);
 
   for (NameType p : params) {
     Symbol s{typeFromKind(p), false};
-    news.declare(p.name, s);
+    local.declare(p.name, s);
   }
-  block->check(news);
-  if (ret.typeExp != Type::Void() && !ret.hasReturned) {
+  block->check(local);
+  if (local.ret->typeExp != Type::Void() && !local.ret->hasReturned) {
     s.error("Not all branches returned a value");
   }
 }
@@ -136,7 +145,10 @@ void ReturnStm::check(Scope &s) {
                         t.toString(), s.ret->typeExp.toString()));
   s.ret->hasReturned = true;
 }
-void ReturnStm::interp(Context &c) {}
+void ReturnStm::interp(Context &c) {
+  c.ret->val = exp->interp(c);
+  c.ret->isset = true;
+}
 
 void PrintStm::debug(size_t depth) {
   std::cout << "print (";

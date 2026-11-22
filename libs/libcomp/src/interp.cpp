@@ -7,6 +7,12 @@ using namespace interp;
 // true/false volgens of symbol al bestaat
 void Context::declare(str id, Value val) { values_[id] = val; };
 
+str Context::argKey(const str &label, size_t i) {
+  if (label != "_")
+    return label;
+  return i == 0 ? "_" : "_" + std::to_string(i);
+}
+
 Context *Context::findContext(str id) {
   for (Context *c = this; c; c = c->parent_.get()) {
     auto it = c->values_.find(id);

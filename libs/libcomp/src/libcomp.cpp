@@ -59,7 +59,7 @@ void BlockStm::check(Scope &s) {
   stms->check(inner);
 };
 void BlockStm::interp(Context &c) {
-  std::shared_ptr<Context> newc = std::make_shared<Context>(c);
+  std::shared_ptr<Context> newc = std::make_shared<Context>(c.shared_from_this());
   stms->interp(*newc);
 }
 
@@ -98,6 +98,7 @@ void IfStm::check(Scope &s) {
     els->check(s);
     if(!s.ret->hasReturned && returned) s.error("Not all branches return a value");
   }
+  s.ret->startNewFlow();
 };
 void IfStm::interp(Context &c) {
   bool co = cond->interp(c).asBool();

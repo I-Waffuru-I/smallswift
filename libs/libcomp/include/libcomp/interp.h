@@ -59,6 +59,7 @@ public:
 
 private:
   Context *findContext(str id);
+  static str argKey(const str &label, size_t i);
 
 public:
   Context(std::shared_ptr<Context> parent = nullptr)

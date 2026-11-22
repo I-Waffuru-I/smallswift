@@ -34,7 +34,9 @@ int main(int argc, char **argv) {
   result->debug(0);
   std::cout << std::endl << std::endl;
 
+  typecheck::DebugInfo dbinfo;
   typecheck::Scope program;
+  program.dbg = dbinfo;
   cstd::loadStd(program);
   result->check(program);
 
